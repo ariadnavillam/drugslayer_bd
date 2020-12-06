@@ -1,5 +1,6 @@
 from os import system
 import mysql.connector
+from mysql.connector import errorcode
 
 system("cls")
 print(" -----------------------------------------------------------------------------------")
@@ -38,11 +39,47 @@ config = {
     'db': 'disnet_drugslayer',
     }
 
-db=mysql.connector.connect(**config)
-db.autocommit=True
-cursor=db.cursor()
+try:
+    db=mysql.connector.connect(**config)
+    db.autocommit=True
+    cursor=db.cursor()
 
-if int(opcion)==7:
+except mysql.connector.Error as err:
+    if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+        print("Something is wrong with your user name or password")
+    elif err.errno == errorcode.ER_BAD_DB_ERROR:
+        print("Database does not exist")
+    else:
+        print(err)
+
+finally:
+    db.close()
+    print("Data in file x.txt")
+
+#if opcion == 1:
+    
+#elif opcion == 2:
+
+#elif opcion == 3:
+
+if int(opcion) == 4:
+    system("cls")
+    print(" --------------------------------------------------------------------------")
+    print("|                         Efectos fenotípicos                              | ")
+    print(" --------------------------------------------------------------------------")
+    print("En esta ventana podrá consultar información de los efectos fenotípicos asociados un fármaco.")
+    print("Opciones: a. Indicaciones del fármaco: muestra los efectos fenotípicos que sean indicaciones "
+                        "para las cuales se utiliza el fármaco")
+    print("          b. Efectos secundarios de un fármaco: muestra quellos efectos fenotípicos "
+                        "categorizados como efectos secundarios generados por el fármaco ordenados "
+                        "de forma descendiente en base a la evidencia de esta asociación")
+    opcion_letra = input("Introduzca una opción: ")
+    while True:
+        if opcion_letra.lower() in ("a", "b"):
+            break
+        
+
+elif int(opcion)==7:
     system("cls")
     print(" --------------------------------------------------------------------------")
     print("|                              Inserciones                                 | ")
@@ -68,7 +105,7 @@ if int(opcion)==7:
     else:
         exit()
 
-if int(opcion)==8:
+elif int(opcion)==8:
     system("cls")
     print(" --------------------------------------------------------------------------")
     print("|                             Modificiones                                 | ")
@@ -90,7 +127,9 @@ if int(opcion)==8:
     else:
         exit()
 
-if int(opcion)==9:
+elif int(opcion)==9:
     exit()
 
-db.close()
+#else:
+#    print("Introduzca un número del 1 al 9.")
+
