@@ -23,23 +23,6 @@ def in_variable(texto, patron, texto_alt):
 
 
 menus.principal()
-system("cls")
-print(" -----------------------------------------------------------------------------------")
-print("|                              BASE DE DATOS DE FARMACOS                            |")
-print(" -----------------------------------------------------------------------------------")
-
-print("Bienvenido a la base de datos 'disnet_drugslayer' del proyecto DISNET.")
-print("Cuenta con información sobre enfermedades a nivel fenotipico, biologico y fármacos.")
-print("\nPuede obtener diferentes tipos de información o funciones:")
-print("\n\t1. Información general")
-print("\n\t2. Información de los fármacos")
-print("\n\t3. Información de las enfermedades")
-print("\n\t4. Información de los efectos fenotipicos")
-print("\n\t5. Información de los targets")
-print("\n\t6. Borrados")
-print("\n\t7. Inserciones")
-print("\n\t8. Modificaciones")
-print("\n\t9. Salir")
 
 opcion = in_variable("\n¿Que función desea hacer? [Introduzca el número de la función deseada]", re.compile("[1-9]"), "Error. Introduzca un número.")
 
@@ -69,14 +52,7 @@ finally:
     print("Data in file x.txt")
 
 if int(opcion)==1:
-    system("cls")
-    print(" --------------------------------------------------------------------------")
-    print("|                        Información general                               | ")
-    print(" --------------------------------------------------------------------------")
-    print("En esta ventana puedes obtener varios tipos de información:")
-    print("\n\t1. Número total")
-    print("\n\t2. Primeras 10 instancias")
-
+    
     opcion2=input("\n¿Qué opción desea realizar? [Introduzca el número de la funcion deseada]")
     try:
         opcion2=int(opcion2)
@@ -88,10 +64,7 @@ if int(opcion)==1:
         exit()
 
     if opcion2==1:
-        system("cls")
-        print(" --------------------------------------------------------------------------")
-        print("|                        Información general                               | ")
-        print(" --------------------------------------------------------------------------")
+        menus.menu_1_1()
         query1 = "SELECT COUNT(drug.drug_id) FROM drug"
         cursor.execute(query1)
         for row in cursor:
@@ -126,16 +99,7 @@ if int(opcion)==1:
             exit()
 
     if opcion2==2:
-        system("cls")
-        print(" --------------------------------------------------------------------------")
-        print("|                        Información general                               | ")
-        print(" --------------------------------------------------------------------------")
-        print("En esta ventana puedes obtener las diez primeras instancias de:")
-        print("\n\t1. Fármacos")
-        print("\n\t2. Enfermedades")
-        print("\n\t3. Efectos fenotipicos")
-        print("\n\t4. Dianas")
-
+        menus.menu_1_2()
         opcion3=input("\n¿Qué opción desea realizar? [Introduzca el número de la funcion deseada]")
 
         try:
@@ -188,16 +152,13 @@ if int(opcion)==1:
                 target_organism = row[3]
                 print(target_id + "\t" + target_name + "\t" + target_type + "\t" + target_organism)
 
-#elif opcion == 2:
+elif opcion == 2:
+    menus.menu_2()
+
 
 if opcion==3:
-    system("cls")
-    print(" --------------------------------------------------------------------------")
-    print("|                   Información de las enfermedades                        | ")
-    print(" --------------------------------------------------------------------------")
-    print("En esta ventana puedes obtener información sobre las enfermedades:")
-    print("\n\t1. Fármacos para una enfermedad")
-    print("\n\t2. Fármaco y enfermedad con el mayor score de asociación")
+    menus.menu_3()
+    
 
     opcion2=input("\n¿Qué opción desea realizar? [Introduzca el número de la funcion deseada]")
     try:
@@ -400,5 +361,4 @@ elif int(opcion)==8:
 elif int(opcion)==9:
     exit()
 
-#else:
-#    print("Introduzca un número del 1 al 9.")
+
