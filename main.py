@@ -1,5 +1,3 @@
-#HOLA
-#hola2
 from os import system
 import re
 import mysql.connector
