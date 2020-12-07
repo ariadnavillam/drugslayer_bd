@@ -2,6 +2,23 @@ from os import system
 import re
 import mysql.connector
 from mysql.connector import errorcode
+def in_variable(texto, patron):
+    """
+    Esta función sirve para introducir variables sin errores
+    """
+    
+    while True:
+        var = input(texto)
+        if patron.match(var):
+            break
+
+        elif var == "exit":
+            exit()
+        else:
+            continue
+    return var
+    
+
 
 system("cls")
 print(" -----------------------------------------------------------------------------------")
@@ -21,17 +38,17 @@ print("\n\t7. Inserciones")
 print("\n\t8. Modificaciones")
 print("\n\t9. Salir")
 
-opcion=input("\n¿Que función desea hacer? [Introduzca el número de la función deseada]")
+#opcion=input("\n¿Que función desea hacer? [Introduzca el número de la función deseada]")
+opcion = in_variable("\n¿Que función desea hacer? [Introduzca el número de la función deseada]", re.compile("[1-9]"))
+# try:
+#     opcion=int(opcion)
+#     if int(opcion)<0 or int(opcion)>9:
+#         print("ERROR: El número introducido debe ser un numero entero del 1 al 9")
+#         exit()
 
-try:
-    opcion=int(opcion)
-    if int(opcion)<0 or int(opcion)>9:
-        print("ERROR: El número introducido debe ser un numero entero del 1 al 9")
-        exit()
-
-except:
-    print("ERROR: Debe introducir un número entero del 1 al 9")
-    exit()
+# except:
+#     print("ERROR: Debe introducir un número entero del 1 al 9")
+#     exit()
 
 config = {
     'user': 'drugslayer',
@@ -76,20 +93,17 @@ if int(opcion) == 4:
           "             por el fármaco ordenados de forma descendiente en base a la \n"
           "             evidencia de esta asociación\n")
     
-    while True:
-        opcion_letra = input("Introduzca una opción: ")
-        if opcion_letra.lower() in ("a", "b"):
-            break
-        else:
-            continue
+    opcion_letra = in_variable("Introduzca una opción: ", re.compile("[Aa]|[Bb]"))
+
+    drug_id = in_variable("Introduzca Drug Id ChEMBL : ", re.compile("CHEMBL[1-9]+")) 
     
-    while True:
-        pattern = re.compile("CHEMBL[1-9]+")
-        drug_id = input("Introduzca Drug Id ChEMBL : ")
-        if pattern.match(drug_id):
-            break
-        else:
-            print("Drug id: CHEMBL + número.")
+    # while True:
+    #     pattern = re.compile("CHEMBL[1-9]+")
+    #     drug_id = input("Introduzca Drug Id ChEMBL : ")
+    #     if pattern.match(drug_id):
+    #         break
+    #     else:
+    #         print("Drug id: CHEMBL + número.")
 
     f = open("resultados.txt", "a")
     if opcion_letra.lower() == "a":
