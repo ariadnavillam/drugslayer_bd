@@ -1,4 +1,5 @@
 from os import system
+from os import getcwd
 import re
 import mysql.connector
 from mysql.connector import errorcode
@@ -23,16 +24,17 @@ def in_variable(texto, patron, texto_alt):
     return var
 
 def nueva_consulta():
-    rep=in_variable("\n¿Quiere hacer otra consulta? [S/N]",re.compile("[SN]"),"\n¿Quiere hacer otra consulta? [S/N]")
+    rep=in_variable("\n¿Quiere hacer otra consulta? [S/N]", re.compile("[SN]"),"\n¿Quiere hacer otra consulta? [S/N]")
     if rep=="S":
-        system("python script1.py")
+        ruta = getcwd()
+        system("python " + ruta + "\main.py")
     else:
         exit()
+#En vez de esto yo haria un bucle en el que se ejecute el código todo el rato . En plan while var == S... pues se ejecuta y cuando escribes no sale del bucle y cierra la conexion etc
 
 menus.principal()
 
 opcion = in_variable("\n¿Que función desea hacer? [Introduzca el número de la función deseada]", re.compile("[1-9]"), "Error. Introduzca un número.")
-
 
 config = {
     'user': 'drugslayer',
@@ -54,11 +56,11 @@ except mysql.connector.Error as err:
     else:
         print(err)
 
-finally:
-    db.close()
-    print("Data in file x.txt") ##No esta bien esto
+# finally:
+#     db.close()
+#     print("Data in file x.txt") ##No esta bien esto
 
-if int(opcion)==1:
+if int(opcion) == 1:
     
     opcion2=input("\n¿Qué opción desea realizar? [Introduzca el número de la funcion deseada]")
     try:
@@ -159,25 +161,23 @@ if int(opcion)==1:
                 target_organism = row[3]
                 print(target_id + "\t" + target_name + "\t" + target_type + "\t" + target_organism)
 
-elif opcion == 2:
+elif int(opcion) == 2:
     menus.menu_2()
 
-    opcion_letra = in_variable("Introduzca una opción: ", re.compile("[Aa]|[Bb]|[Cc]"), "Introduzca a, b o c.")  
+    opcion_letra = in_variable("\nIntroduzca una opción: ", re.compile("[Aa]|[Bb]|[Cc]"), "Introduzca a, b o c.")  
     if opcion_letra.lower() == "a":
-        drug_iden = in_variable("Introduzca el drug id: ", re.compile("CHEMBL[1-9]+"), "Drug ID: CHEMBL + número")
+        drug_iden = in_variable("\nIntroduzca el drug id: ", re.compile("CHEMBL[1-9]+"), "Drug ID: CHEMBL + número")
         query = str("SELECT drug_name, molecular_type, chemical_structure, inchi_key from drug where drug_id= %s")
-        cursor.execute(query, (drug_iden,))
-        print("Drug Name\tMolecular type\tChemical structure\tInChi-Key")
-        for row in cursor:
-            print(row[0] + "\t" + row[1] + "\t" + row[2] + "\t" + row[3])
+        SQL.consultar_unico(cursor, query, (drug_iden,), ("Drug Name", "Molecular type", "Chemical structure","InChi-Key"))
     
     elif opcion_letra.lower() == "b":
         drug_nom = in_variable("Introduzca el nombre de una droga: ", re.compile("CHEMBL[1-9]+"), "Drug ID: CHEMBL + número")
         query = "SELECT synonymous_name FROM synonymous, drug WHERE synonymous.drug_id=drug.drug_id AND drug.drug_name = %s"
-        cursor.execute(query, (drug_nom,))
-        print("Sinónimos de " + drug_nom)
-        for row in cursor:
-            print(row[0])
+        SQL.consultar_filas(cursor, query, (drug_nom,), ("Sinónimos de " + drug_nom))
+        # cursor.execute(query, (drug_nom,))
+        # print("Sinónimos de " + drug_nom)
+        # for row in cursor:
+        #     print(row[0])
 
     elif opcion_letra.lower() == "c":
         drug_id = in_variable("Introduzca el nombre del fármaco: ", re.compile("CHEMBL[1-9]+"), "Drug ID: CHEMBL + número")
@@ -189,7 +189,7 @@ elif opcion == 2:
     
     nueva_consulta()
 
-if opcion==3:
+if int(opcion) ==3:
     menus.menu_3()
     
 
