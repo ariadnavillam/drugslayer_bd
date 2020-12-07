@@ -1,4 +1,5 @@
 from os import system
+import re
 import mysql.connector
 from mysql.connector import errorcode
 
@@ -35,7 +36,7 @@ except:
 config = {
     'user': 'drugslayer',
     'passwd': 'drugslayer_pwd',
-    'host': '127.0.0.1',
+    'host': 'localhost',
     'db': 'disnet_drugslayer',
     }
 
@@ -67,17 +68,121 @@ if int(opcion) == 4:
     print(" --------------------------------------------------------------------------")
     print("|                         Efectos fenotípicos                              | ")
     print(" --------------------------------------------------------------------------")
-    print("En esta ventana podrá consultar información de los efectos fenotípicos asociados un fármaco.")
-    print("Opciones: a. Indicaciones del fármaco: muestra los efectos fenotípicos que sean indicaciones "
-                        "para las cuales se utiliza el fármaco")
-    print("          b. Efectos secundarios de un fármaco: muestra quellos efectos fenotípicos "
-                        "categorizados como efectos secundarios generados por el fármaco ordenados "
-                        "de forma descendiente en base a la evidencia de esta asociación")
-    opcion_letra = input("Introduzca una opción: ")
+    print("En esta ventana podrá consultar información de los efectos fenotípicos \nasociados un fármaco.")
+    print("Opciones: a. Indicaciones del fármaco: muestra los efectos fenotípicos \n"
+          "             que sean indicaciones para las cuales se utiliza el fármaco.\n")
+    print("          b. Efectos secundarios de un fármaco: muestra quellos efectos \n"
+          "             fenotípicos categorizados como efectos secundarios generados\n"
+          "             por el fármaco ordenados de forma descendiente en base a la \n"
+          "             evidencia de esta asociación\n")
+    
     while True:
+        opcion_letra = input("Introduzca una opción: ")
         if opcion_letra.lower() in ("a", "b"):
             break
-        
+        else:
+            continue
+    
+    while True:
+        pattern = re.compile("CHEMBL[1-9]+")
+        drug_id = input("Introduzca Drug Id ChEMBL : ")
+        if pattern.match(drug_id):
+            break
+        else:
+            print("Drug id: CHEMBL + número.")
+
+    f = open("resultados.txt", "a")
+    if opcion_letra.lower() == "a":
+        query = str("SELECT phenotype_effect.phenotype_id, phenotype_effect.phenotype_name "
+                    "FROM phenotype_effect, drug_phenotype_effect "
+                    "WHERE drug_phenotype_effect.drug_id = %s AND drug_phenotype_effect.phenotype_id = phenotype_effect.phenotype_id "
+                    )
+        params = (drug_id,)
+        cursor.execute(query, params)
+        print("\nPhenotype ID\tPhenotype effect")
+        f.write("\nPhenotype ID\tPhenotype effect")
+        count = 0
+        for row in cursor:
+            if count < 10:
+                print(row[0] + "\t" + row[1])
+                f.write(row[0] + "\t" + row[1])
+            else:
+                f.write(row[0] + "\t" + row[1])
+    
+    elif opcion_letra.lower() == "b":
+        query = str("SELECT phenotype_effect.phenotype_id, phenotype_effect.phenotype_name, drug_phenotype_effect.score "
+                    "FROM phenotype_effect, drug_phenotype_effect "
+                    "WHERE drug_phenotype_effect.drug_id = %s "
+                    "AND drug_phenotype_effect.phenotype_type LIKE 'SIDE EFFECT' "
+                    "AND drug_phenotype_effect.phenotype_id = phenotype_effect.phenotype_id "
+                    "ORDER BY drug_phenotype_effect.score DESC")
+        cursor.execute(query, (drug_id,))            
+        print("\nPhenotype ID\tPhenotype name")
+        f.write("\nPhenotype ID\tPehnotype name")
+        count = 0
+        for row in cursor:
+            if count < 10:
+                print(row[0] + "\t" + row[1] + "\t" + row[2])
+                f.write(row[0] + "\t" + row[1] + "\t" + row[2])
+            else:
+                f.write(row[0] + "\t" + row[1] + "\t" + row[2])
+    f.close()
+    
+    rep=input("\n¿Quiere hacer otra consulta? [S/N]")
+    if rep=="S":
+        system("python script1.py")
+    else:
+        exit()
+
+#elif int(opcion) == 5:
+
+elif int(opcion) == 6:
+    system("cls")
+    print(" --------------------------------------------------------------------------")
+    print("|                                Borrados                                  | ")
+    print(" --------------------------------------------------------------------------")
+    print("En esta ventana podrás Borrar asociación entre un fármaco y una enfermedad \n"
+          "con un score muy bajo. En pantalla se muestran las 10 relaciones con un score\n "
+          "más bajo. Escriba el nombre del fármaco y el nombre de la enfermedad separadas por un guión (-).")
+   
+    query = str("SELECT drug_disease.inferred_score, drug.drug_id, drug.drug_name, disease.disease_id, disease.disease_name "
+                "FROM drug_disease, drug, disease "
+                "WHERE drug_disease.drug_id = drug.drug_id "
+                "AND drug_disease.disease_id = disease.disease_id "
+                "AND drug_disease.inferred_score IS NOT null "
+                "ORDER BY inferred_score ASC LIMIT 10")
+    
+    cursor.execute(query)
+
+    drug_name_id = dict()
+    disease_name_id = dict()
+    print("\nScore\tDrug name\tDisease name")
+    for row in cursor:
+        drug_name_id[row[2]] = row[1]
+        disease_name_id[row[4]] = row[3]
+        print(row[0], row[2], row[4])
+    
+    while True:
+        var_in = input("Introduzca nombre de la relacion a eliminar : ")
+        if var_in == "exit":
+            exit()  
+
+        dd = var_in.split("-")
+        if dd[0] in drug_name_id and dd[1] in disease_name_id:
+            drug_id = drug_name_id[dd[0]]
+            disease_id = disease_name_id[dd[1]]
+            break
+        else:
+            print("Relacion no valida")
+    
+    query = str("SELECT * FROM drug_disease "
+                "WHERE drug_id=%s AND disease_id=%s")
+    #query = "DELETE FROM drug_disease "
+    #        "WHERE drug_id='%s' AND disease_id='%s'" %(drug_id,disease_id)
+    cursor.execute(query,(drug_id, disease_id,))
+
+    for row in cursor:
+        print (row) 
 
 elif int(opcion)==7:
     system("cls")

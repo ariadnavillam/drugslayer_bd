@@ -1,4 +1,3 @@
-#HOLA
 import mysql.connector
 from mysql.connector import errorcode
 from datetime import date, datetime
@@ -16,13 +15,13 @@ try:
     cursor = db.cursor()
     drug_id = input("Introduzca Drug Id ChEMBL : ")
     #4a
-    print("\nPhenotype ID\tPhenotype effect")
+   
     query = str("SELECT phenotype_effect.phenotype_id, phenotype_effect.phenotype_name "
                 "FROM phenotype_effect, drug_phenotype_effect "
                 "WHERE drug_phenotype_effect.drug_id = %s AND drug_phenotype_effect.phenotype_id = phenotype_effect.phenotype_id "
                 "LIMIT 10")
     cursor.execute(query, (drug_id,))
-
+    print("\nPhenotype ID\tPhenotype effect")
     for row in cursor:
         print(row[0] + "\t" + row[1])
 
