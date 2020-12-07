@@ -164,15 +164,15 @@ elif opcion == 2:
 
     opcion_letra = in_variable("Introduzca una opción: ", re.compile("[Aa]|[Bb]|[Cc]"), "Introduzca a, b o c.")  
     if opcion_letra.lower() == "a":
-	    drug_iden = in_variable("Introduzca el drug id: ", re.compile("CHEMBL[1-9]+"), "Drug ID: CHEMBL + número")
-	    query = str("SELECT drug_name, molecular_type, chemical_structure, inchi_key from drug where drug_id= %s")
+        drug_iden = in_variable("Introduzca el drug id: ", re.compile("CHEMBL[1-9]+"), "Drug ID: CHEMBL + número")
+        query = str("SELECT drug_name, molecular_type, chemical_structure, inchi_key from drug where drug_id= %s")
         cursor.execute(query, (drug_iden,))
         print("Drug Name\tMolecular type\tChemical structure\tInChi-Key")
         for row in cursor:
             print(row[0] + "\t" + row[1] + "\t" + row[2] + "\t" + row[3])
     
     elif opcion_letra.lower() == "b":
-	    drug_nom = in_variable("Introduzca el nombre de una droga: ", re.compile("CHEMBL[1-9]+"), "Drug ID: CHEMBL + número")
+        drug_nom = in_variable("Introduzca el nombre de una droga: ", re.compile("CHEMBL[1-9]+"), "Drug ID: CHEMBL + número")
         query = "SELECT synonymous_name FROM synonymous, drug WHERE synonymous.drug_id=drug.drug_id AND drug.drug_name = %s"
         cursor.execute(query, (drug_nom,))
         print("Sinónimos de " + drug_nom)
@@ -180,7 +180,7 @@ elif opcion == 2:
             print(row[0])
 
     elif opcion_letra.lower() == "c":
-	    drug_id = in_variable("Introduzca el nombre del fármaco: ", re.compile("CHEMBL[1-9]+"), "Drug ID: CHEMBL + número")
+        drug_id = in_variable("Introduzca el nombre del fármaco: ", re.compile("CHEMBL[1-9]+"), "Drug ID: CHEMBL + número")
         query = "SELECT ATC_code.ATC_code_id from ATC_code, drug WHERE drug.drug_id = %s GROUP BY drug.drug_id"
         cursor.execute(query,(drug_id,))
         print("Códigos ATC asociados al fármaco " + drug_id)
@@ -274,6 +274,25 @@ if int(opcion) == 4:
         exit()
 
 elif int(opcion) == 5:
+    menus.menu_5()
+
+    opcion_letra = in_variable("Introduzca una opción: ", re.compile("[Aa]|[Bb]"), "Introduzca a o b")
+    if opcion_letra.lower() == "a":
+        target_type = in_variable("Introduzca el tipo de diana: ", re.compile("[A-Z-]+"),"" )
+        query = "SELECT target_name_pref FROM target WHERE target_type = %s ORDER BY target_name_pref ASC LIMIT 20"
+        cursor.execute(query,(target_type,))
+        print("Dianas de tipo " + target_type)
+        for row in cursor:
+            print(row[0])
+
+    elif opcion_letra.lower() == "b":
+        query = str("SELECT target_organism, count(target_id) "
+                    "FROM target group by target_organism "
+                    "ORDER BY COUNT(target_organism) DESC LIMIT 1")
+        cursor.execute(query)
+        for row in cursor:
+            print("Organismo con mayor número de dianas: " + row[0] + "(" + row[1] + " dianas)")
+
 
 elif int(opcion) == 6:
     menus.menu_6()
