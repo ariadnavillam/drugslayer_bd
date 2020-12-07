@@ -29,6 +29,7 @@ def nueva_consulta():
         ruta = getcwd()
         system("python " + ruta + "\main.py")
     else:
+        system("cls")
         exit()
 #En vez de esto yo haria un bucle en el que se ejecute el código todo el rato . En plan while var == S... pues se ejecuta y cuando escribes no sale del bucle y cierra la conexion etc
 
@@ -165,27 +166,21 @@ elif int(opcion) == 2:
     menus.menu_2()
 
     opcion_letra = in_variable("\nIntroduzca una opción: ", re.compile("[Aa]|[Bb]|[Cc]"), "Introduzca a, b o c.")  
+    
     if opcion_letra.lower() == "a":
         drug_iden = in_variable("\nIntroduzca el drug id: ", re.compile("CHEMBL[1-9]+"), "Drug ID: CHEMBL + número")
         query = str("SELECT drug_name, molecular_type, chemical_structure, inchi_key from drug where drug_id= %s")
         SQL.consultar_unico(cursor, query, (drug_iden,), ("Drug Name", "Molecular type", "Chemical structure","InChi-Key"))
     
     elif opcion_letra.lower() == "b":
-        drug_nom = in_variable("Introduzca el nombre de una droga: ", re.compile("CHEMBL[1-9]+"), "Drug ID: CHEMBL + número")
+        drug_nom = in_variable("\nIntroduzca el nombre de un fármaco: ", re.compile(".+"), "")
         query = "SELECT synonymous_name FROM synonymous, drug WHERE synonymous.drug_id=drug.drug_id AND drug.drug_name = %s"
-        SQL.consultar_filas(cursor, query, (drug_nom,), ("Sinónimos de " + drug_nom))
-        # cursor.execute(query, (drug_nom,))
-        # print("Sinónimos de " + drug_nom)
-        # for row in cursor:
-        #     print(row[0])
+        SQL.consultar_filas(cursor, query, (drug_nom,), ("\nSinónimos de " + drug_nom + ":"))
 
     elif opcion_letra.lower() == "c":
-        drug_id = in_variable("Introduzca el nombre del fármaco: ", re.compile("CHEMBL[1-9]+"), "Drug ID: CHEMBL + número")
+        drug_id = in_variable("\nIntroduzca el nombre del fármaco: ", re.compile("CHEMBL[1-9]+"), "Drug ID: CHEMBL + número")
         query = "SELECT ATC_code.ATC_code_id from ATC_code, drug WHERE drug.drug_id = %s GROUP BY drug.drug_id"
-        cursor.execute(query,(drug_id,))
-        print("Códigos ATC asociados al fármaco " + drug_id)
-        for row in cursor:
-            print(row[0])
+        SQL.consultar_filas(cursor, query, (drug_id,), ("\nCódigos ATC asociados al fármaco " + drug_id + ":"))
     
     nueva_consulta()
 
@@ -225,28 +220,17 @@ if int(opcion) ==3:
 
 if int(opcion) == 4:
     menus.menu_4()
-
     opcion_letra = in_variable("Introduzca una opción: ", re.compile("[Aa]|[Bb]"), "Introduzca a o b")
+    drug_id = in_variable("\nIntroduzca Drug Id ChEMBL : ", re.compile("CHEMBL[1-9]+"), "Introduzca Drug ID: ")
 
-    drug_id = in_variable("Introduzca Drug Id ChEMBL : ", re.compile("CHEMBL[1-9]+"), "Introduzca Drug ID: ")
-
-    f = open("resultados.txt", "a")
     if opcion_letra.lower() == "a":
         query = str("SELECT phenotype_effect.phenotype_id, phenotype_effect.phenotype_name "
                     "FROM phenotype_effect, drug_phenotype_effect "
                     "WHERE drug_phenotype_effect.drug_id = %s AND drug_phenotype_effect.phenotype_id = phenotype_effect.phenotype_id "
                     )
         params = (drug_id,)
+        SQL.consultar_filas(cursor, query, params, "\nPhenotype ID\tPhenotype effect" )
         cursor.execute(query, params)
-        print("\nPhenotype ID\tPhenotype effect")
-        f.write("\nPhenotype ID\tPhenotype effect")
-        count = 0
-        for row in cursor:
-            if count < 10:
-                print(row[0] + "\t" + row[1])
-                f.write(row[0] + "\t" + row[1])
-            else:
-                f.write(row[0] + "\t" + row[1])
 
     elif opcion_letra.lower() == "b":
         query = str("SELECT phenotype_effect.phenotype_id, phenotype_effect.phenotype_name, drug_phenotype_effect.score "
@@ -255,40 +239,28 @@ if int(opcion) == 4:
                     "AND drug_phenotype_effect.phenotype_type LIKE 'SIDE EFFECT' "
                     "AND drug_phenotype_effect.phenotype_id = phenotype_effect.phenotype_id "
                     "ORDER BY drug_phenotype_effect.score DESC")
-        cursor.execute(query, (drug_id,))
-        print("\nPhenotype ID\tPhenotype name")
-        f.write("\nPhenotype ID\tPehnotype name")
-        count = 0
-        for row in cursor:
-            if count < 10:
-                print(row[0] + "\t" + row[1] + "\t" + row[2])
-                f.write(row[0] + "\t" + row[1] + "\t" + row[2])
-            else:
-                f.write(row[0] + "\t" + row[1] + "\t" + row[2])
-    f.close()
 
-    rep=input("\n¿Quiere hacer otra consulta? [S/N]")
-    if rep=="S":
-        system("python script1.py")
-    else:
-        exit()
+        SQL.consultar_filas(cursor, query, (drug_id,), "\nPhenotype ID\tPhenotype name\tScore" )
+
+    nueva_consulta()
 
 elif int(opcion) == 5:
     menus.menu_5()
 
-    opcion_letra = in_variable("Introduzca una opción: ", re.compile("[Aa]|[Bb]"), "Introduzca a o b")
+    opcion_letra = in_variable("\nIntroduzca una opción: ", re.compile("[Aa]|[Bb]"), "Introduzca a o b")
     if opcion_letra.lower() == "a":
-        target_type = in_variable("Introduzca el tipo de diana: ", re.compile("[A-Z-]+"),"" )
+        target_type = in_variable("\nIntroduzca el tipo de diana: ", re.compile("[A-Z]|-+"),"" )
+
         query = "SELECT target_name_pref FROM target WHERE target_type = %s ORDER BY target_name_pref ASC LIMIT 20"
-        cursor.execute(query,(target_type,))
-        print("Dianas de tipo " + target_type)
-        for row in cursor:
-            print(row[0])
+        
+        SQL.consultar_filas(cursor, query, (target_type,), ("\nDianas de tipo " + target_type + ":"))
 
     elif opcion_letra.lower() == "b":
+
         query = str("SELECT target_organism, count(target_id) "
                     "FROM target group by target_organism "
                     "ORDER BY COUNT(target_organism) DESC LIMIT 1")
+                    
         cursor.execute(query)
         for row in cursor:
             print("Organismo con mayor número de dianas: " + row[0] + "(" + row[1] + " dianas)")
