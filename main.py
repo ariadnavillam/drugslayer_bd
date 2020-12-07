@@ -3,6 +3,7 @@ import re
 import mysql.connector
 from mysql.connector import errorcode
 import menus
+import SQL
 
 def in_variable(texto, patron, texto_alt):
     """
@@ -21,6 +22,12 @@ def in_variable(texto, patron, texto_alt):
             continue
     return var
 
+def nueva_consulta():
+    rep=in_variable("\n¿Quiere hacer otra consulta? [S/N]",re.compile("[SN]"),"\n¿Quiere hacer otra consulta? [S/N]")
+    if rep=="S":
+        system("python script1.py")
+    else:
+        exit()
 
 menus.principal()
 
@@ -49,7 +56,7 @@ except mysql.connector.Error as err:
 
 finally:
     db.close()
-    print("Data in file x.txt")
+    print("Data in file x.txt") ##No esta bien esto
 
 if int(opcion)==1:
     
@@ -155,6 +162,32 @@ if int(opcion)==1:
 elif opcion == 2:
     menus.menu_2()
 
+    opcion_letra = in_variable("Introduzca una opción: ", re.compile("[Aa]|[Bb]|[Cc]"), "Introduzca a, b o c.")  
+    if opcion_letra.lower() == "a":
+	    drug_iden = in_variable("Introduzca el drug id: ", re.compile("CHEMBL[1-9]+"), "Drug ID: CHEMBL + número")
+	    query = str("SELECT drug_name, molecular_type, chemical_structure, inchi_key from drug where drug_id= %s")
+        cursor.execute(query, (drug_iden,))
+        print("Drug Name\tMolecular type\tChemical structure\tInChi-Key")
+        for row in cursor:
+            print(row[0] + "\t" + row[1] + "\t" + row[2] + "\t" + row[3])
+    
+    elif opcion_letra.lower() == "b":
+	    drug_nom = in_variable("Introduzca el nombre de una droga: ", re.compile("CHEMBL[1-9]+"), "Drug ID: CHEMBL + número")
+        query = "SELECT synonymous_name FROM synonymous, drug WHERE synonymous.drug_id=drug.drug_id AND drug.drug_name = %s"
+        cursor.execute(query, (drug_nom,))
+        print("Sinónimos de " + drug_nom)
+        for row in cursor:
+            print(row[0])
+
+    elif opcion_letra.lower() == "c":
+	    drug_id = in_variable("Introduzca el nombre del fármaco: ", re.compile("CHEMBL[1-9]+"), "Drug ID: CHEMBL + número")
+        query = "SELECT ATC_code.ATC_code_id from ATC_code, drug WHERE drug.drug_id = %s GROUP BY drug.drug_id"
+        cursor.execute(query,(drug_id,))
+        print("Códigos ATC asociados al fármaco " + drug_id)
+        for row in cursor:
+            print(row[0])
+    
+    nueva_consulta()
 
 if opcion==3:
     menus.menu_3()
@@ -191,17 +224,7 @@ if opcion==3:
             print("Drug_name: %s" % drug_name)
 
 if int(opcion) == 4:
-    system("cls")
-    print(" --------------------------------------------------------------------------")
-    print("|                         Efectos fenotípicos                              | ")
-    print(" --------------------------------------------------------------------------")
-    print("En esta ventana podrá consultar información de los efectos fenotípicos \nasociados un fármaco.")
-    print("Opciones: a. Indicaciones del fármaco: muestra los efectos fenotípicos \n"
-          "             que sean indicaciones para las cuales se utiliza el fármaco.\n")
-    print("          b. Efectos secundarios de un fármaco: muestra quellos efectos \n"
-          "             fenotípicos categorizados como efectos secundarios generados\n"
-          "             por el fármaco ordenados de forma descendiente en base a la \n"
-          "             evidencia de esta asociación\n")
+    menus.menu_4()
 
     opcion_letra = in_variable("Introduzca una opción: ", re.compile("[Aa]|[Bb]"), "Introduzca a o b")
 
@@ -250,16 +273,10 @@ if int(opcion) == 4:
     else:
         exit()
 
-#elif int(opcion) == 5:
+elif int(opcion) == 5:
 
 elif int(opcion) == 6:
-    system("cls")
-    print(" --------------------------------------------------------------------------")
-    print("|                                Borrados                                  | ")
-    print(" --------------------------------------------------------------------------")
-    print("En esta ventana podrás Borrar asociación entre un fármaco y una enfermedad \n"
-          "con un score muy bajo. En pantalla se muestran las 10 relaciones con un score\n "
-          "más bajo. Escriba el nombre del fármaco y el nombre de la enfermedad separadas por un guión (-).")
+    menus.menu_6()
 
     query = str("SELECT drug_disease.inferred_score, drug.drug_id, drug.drug_name, disease.disease_id, disease.disease_name "
                 "FROM drug_disease, drug, disease "
@@ -301,12 +318,7 @@ elif int(opcion) == 6:
         print (row)
 
 elif int(opcion)==7:
-    system("cls")
-    print(" --------------------------------------------------------------------------")
-    print("|                              Inserciones                                 | ")
-    print(" --------------------------------------------------------------------------")
-    print("En esta ventana podrás añadir una nueva enfermedad con su fármaco asociado")
-
+    menus.menu_7()
 
     id_d=input("\n¿Qué identificador desea introducir?")
     print("Fuente del identificador")
@@ -337,11 +349,7 @@ elif int(opcion)==7:
         exit()
 
 elif int(opcion)==8:
-    system("cls")
-    print(" --------------------------------------------------------------------------")
-    print("|                             Modificiones                                 | ")
-    print(" --------------------------------------------------------------------------")
-    print("En esta ventana podrás establecer como 0 el score")
+    menus.menu_8()
 
     valor_min=input("\n¿Cuál es el valor minimo que de score de asociacion que desea?")
     upd="UPDATE drug_phenotype_effect SET score=0 WHERE score < %s AND phenotype_type LIKE 'SIDE EFFECT'"
