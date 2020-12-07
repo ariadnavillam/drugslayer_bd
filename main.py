@@ -1,4 +1,5 @@
 #HOLA
+#hola2
 from os import system
 import re
 import mysql.connector
@@ -9,7 +10,7 @@ def in_variable(texto, patron, texto_alt):
     """
     Esta función sirve para introducir variables sin errores
     """
-    
+
     while True:
         var = input(texto)
         if patron.match(var):
@@ -21,7 +22,7 @@ def in_variable(texto, patron, texto_alt):
             print(texto_alt)
             continue
     return var
-    
+
 
 menus.principal()
 system("cls")
@@ -70,7 +71,7 @@ finally:
     print("Data in file x.txt")
 
 #if opcion == 1:
-    
+
 #elif opcion == 2:
 
 #elif opcion == 3:
@@ -87,11 +88,11 @@ if int(opcion) == 4:
           "             fenotípicos categorizados como efectos secundarios generados\n"
           "             por el fármaco ordenados de forma descendiente en base a la \n"
           "             evidencia de esta asociación\n")
-    
+
     opcion_letra = in_variable("Introduzca una opción: ", re.compile("[Aa]|[Bb]"), "Introduzca a o b")
 
-    drug_id = in_variable("Introduzca Drug Id ChEMBL : ", re.compile("CHEMBL[1-9]+"), "Introduzca Drug ID: ") 
- 
+    drug_id = in_variable("Introduzca Drug Id ChEMBL : ", re.compile("CHEMBL[1-9]+"), "Introduzca Drug ID: ")
+
     f = open("resultados.txt", "a")
     if opcion_letra.lower() == "a":
         query = str("SELECT phenotype_effect.phenotype_id, phenotype_effect.phenotype_name "
@@ -109,7 +110,7 @@ if int(opcion) == 4:
                 f.write(row[0] + "\t" + row[1])
             else:
                 f.write(row[0] + "\t" + row[1])
-    
+
     elif opcion_letra.lower() == "b":
         query = str("SELECT phenotype_effect.phenotype_id, phenotype_effect.phenotype_name, drug_phenotype_effect.score "
                     "FROM phenotype_effect, drug_phenotype_effect "
@@ -117,7 +118,7 @@ if int(opcion) == 4:
                     "AND drug_phenotype_effect.phenotype_type LIKE 'SIDE EFFECT' "
                     "AND drug_phenotype_effect.phenotype_id = phenotype_effect.phenotype_id "
                     "ORDER BY drug_phenotype_effect.score DESC")
-        cursor.execute(query, (drug_id,))            
+        cursor.execute(query, (drug_id,))
         print("\nPhenotype ID\tPhenotype name")
         f.write("\nPhenotype ID\tPehnotype name")
         count = 0
@@ -128,7 +129,7 @@ if int(opcion) == 4:
             else:
                 f.write(row[0] + "\t" + row[1] + "\t" + row[2])
     f.close()
-    
+
     rep=input("\n¿Quiere hacer otra consulta? [S/N]")
     if rep=="S":
         system("python script1.py")
@@ -145,14 +146,14 @@ elif int(opcion) == 6:
     print("En esta ventana podrás Borrar asociación entre un fármaco y una enfermedad \n"
           "con un score muy bajo. En pantalla se muestran las 10 relaciones con un score\n "
           "más bajo. Escriba el nombre del fármaco y el nombre de la enfermedad separadas por un guión (-).")
-   
+
     query = str("SELECT drug_disease.inferred_score, drug.drug_id, drug.drug_name, disease.disease_id, disease.disease_name "
                 "FROM drug_disease, drug, disease "
                 "WHERE drug_disease.drug_id = drug.drug_id "
                 "AND drug_disease.disease_id = disease.disease_id "
                 "AND drug_disease.inferred_score IS NOT null "
                 "ORDER BY inferred_score ASC LIMIT 10")
-    
+
     cursor.execute(query)
 
     drug_name_id = dict()
@@ -162,11 +163,11 @@ elif int(opcion) == 6:
         drug_name_id[row[2]] = row[1]
         disease_name_id[row[4]] = row[3]
         print(row[0], row[2], row[4])
-    
+
     while True:
         var_in = input("Introduzca nombre de la relacion a eliminar : ")
         if var_in == "exit":
-            exit()  
+            exit()
 
         dd = var_in.split("-")
         if dd[0] in drug_name_id and dd[1] in disease_name_id:
@@ -175,7 +176,7 @@ elif int(opcion) == 6:
             break
         else:
             print("Relacion no valida")
-    
+
     query = str("SELECT * FROM drug_disease "
                 "WHERE drug_id=%s AND disease_id=%s")
     #query = "DELETE FROM drug_disease "
@@ -183,7 +184,7 @@ elif int(opcion) == 6:
     cursor.execute(query,(drug_id, disease_id,))
 
     for row in cursor:
-        print (row) 
+        print (row)
 
 elif int(opcion)==7:
     system("cls")
@@ -238,4 +239,3 @@ elif int(opcion)==9:
 
 #else:
 #    print("Introduzca un número del 1 al 9.")
-
