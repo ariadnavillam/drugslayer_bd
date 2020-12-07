@@ -356,13 +356,13 @@ elif int(opcion)==7:
         resource_id="72"
     if r_id==2:
         resource_id="75"
-    
+
     name_d=input("\n¿Qué nombre desea introducir?")
     name_f=input("\n¿Cuál es el nombre del fármaco asociado?")
     add_dis="INSERT INTO disease VALUES (%s, %s, %s)"
     add_drug_dis="INSERT INTO drug_disease (disease_id, drug_id, source_id) VALUES (%s, (SELECT drug_id FROM drug WHERE drug_name=%s), 3)"
     try:
-        cursor.execute(add_dis, (72, id_d, name_d))
+        cursor.execute(add_dis, (resource_id, id_d, name_d))
         cursor.execute(add_drug_dis, (id_d, name_f))
         print("\n - Inserción realizada con éxito - ")
     except:
