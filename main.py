@@ -346,7 +346,17 @@ elif int(opcion)==7:
     print(" --------------------------------------------------------------------------")
     print("En esta ventana podrás añadir una nueva enfermedad con su fármaco asociado")
 
+
     id_d=input("\n¿Qué identificador desea introducir?")
+    print("Fuente del identificador")
+    print("\n\t1.OMIM")
+    print("\n\t2.MESH")
+    r_id=input("¿Cuál es la fuente del identificador introducido?")
+    if r_id==1:
+        resource_id="72"
+    if r_id==2:
+        resource_id="75"
+    
     name_d=input("\n¿Qué nombre desea introducir?")
     name_f=input("\n¿Cuál es el nombre del fármaco asociado?")
     add_dis="INSERT INTO disease VALUES (%s, %s, %s)"
