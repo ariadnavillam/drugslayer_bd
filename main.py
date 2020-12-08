@@ -1,16 +1,14 @@
-from os import system
-from os import getcwd
 import re
-import mysql.connector
-from mysql.connector import errorcode
-import menus
 import SQL
+import menus
+import mysql.connector
+from os import system, getcwd
+from mysql.connector import errorcode
 
 def in_variable(texto, patron, texto_alt):
     """
     Esta función sirve para introducir variables sin errores
     """
-
     while True:
         var = input(texto)
         if patron.match(var):
@@ -24,8 +22,8 @@ def in_variable(texto, patron, texto_alt):
     return var
 
 def nueva_consulta():
-    rep=in_variable("\n¿Quiere hacer otra consulta? [S/N]", re.compile("[SN]"),"\n¿Quiere hacer otra consulta? [S/N]")
-    if rep=="S":
+    rep=in_variable("\n¿Quiere hacer otra consulta? [S/N]", re.compile("[Ss]|[Nn]"),"\n¿Quiere hacer otra consulta? [S/N]")
+    if rep.upper()=="S":
         ruta = getcwd()
         system("python " + ruta + "\main.py")
     else:
@@ -62,116 +60,64 @@ except mysql.connector.Error as err:
 #     print("Data in file x.txt") ##No esta bien esto
 
 if int(opcion) == 1:
-    
-    opcion2=input("\n¿Qué opción desea realizar? [Introduzca el número de la funcion deseada]")
-    try:
-        opcion2=int(opcion2)
-        if opcion2<1 or opcion2>2:
-            print("ERROR: Debe introducir un número entero del 1 al 2.")
-            exit()
-    except:
-        print("ERROR: Debe introducir un número entero del 1 al 2.")
-        exit()
+    menus.menu_1()
 
-    if opcion2==1:
+    opcion_letra = in_variable("\nIntroduzca una opción: ", re.compile("[Aa]|[Bb]|"), "Introduzca a o b.")
+
+    if opcion_letra.lower() == "a":
         menus.menu_1_1()
-        query1 = "SELECT COUNT(drug.drug_id) FROM drug"
-        cursor.execute(query1)
-        for row in cursor:
-            count_drug = row[0]
-            print("\n\t1. Número total de fármacos: %s" % count_drug)
 
+        db.start_transaction()
 
-        query2 = "SELECT COUNT(resource_id) FROM disease"
-        cursor.execute(query2)
-        for row in cursor:
-            count_disease = row[0]
-            print("\n\t2. Número total de enfermedades: %s " % count_disease)
+        query = "SELECT COUNT(drug.drug_id) FROM drug"
+        SQL.contar_instancias(cursor, query, "1. Número total de fármacos: ")
 
+        query = "SELECT COUNT(resource_id) FROM disease"
+        SQL.contar_instancias(cursor, query, "2. Número total de enfermedades: ")
 
-        query3 = "SELECT COUNT(phenotype_id) FROM drug_phenotype_effect"
-        cursor.execute(query3)
-        for row in cursor:
-            count_phenotype = row[0]
-            print("\n\t3. Número total de efectos fenotípicos: %s " % count_phenotype)
+        query = "SELECT COUNT(phenotype_id) FROM drug_phenotype_effect"
+        SQL.contar_instancias(cursor, query, "3. Número total de efectos fenotípicos: ")
 
+        query = "SELECT COUNT(target_id) FROM drug_target"
+        SQL.contar_instancias(cursor, query, "4. Número total de targets diferentes: ")
 
-        query4 = "SELECT COUNT(target_id) FROM drug_target"
-        cursor.execute(query4)
-        for row in cursor:
-            count_target = row[0]
-            print("\n\t4. Número total de targets diferentes: %s " % count_target)
+        db.commit()
 
-        rep=input("\n¿Quiere hacer otra consulta? [S/N]")
-        if rep=="S":
-            system("python script1.py")
-        else:
-            exit()
+        nueva_consulta()
 
-    if opcion2==2:
+    elif opcion_letra.lower() == "b":
         menus.menu_1_2()
-        opcion3=input("\n¿Qué opción desea realizar? [Introduzca el número de la funcion deseada]")
 
-        try:
-            opcion3=int(opcion3)
-            if opcion3<1 or opcion3>4:
-                print("ERROR: Debe introducir un número entero del 1 al 2.")
-                exit()
-        except:
-            print("ERROR: Debe introducir un número entero del 1 al 2.")
-            exit()
+        opcion_letra2 = in_variable("\nIntroduzca una opción: ", re.compile("[Aa]|[Bb]|[Cc]|[Dd]"), "Introduzca a, b, c o d.")
 
-        if opcion3==1:
-            query1 = "SELECT drug_id, drug_name, molecular_type, chemical_structure, inchi_key FROM drug WHERE drug_id IS NOT NULL AND drug_name IS NOT NULL AND molecular_type IS NOT NULL AND chemical_structure IS NOT NULL AND inchi_key IS NOT NULL LIMIT 10"
-            cursor.execute(query1)
-            print("PRIMERAS 10 INSTANCIAS DE MEDICAMENTOS")
-            for row in cursor:
-                drug_id = row[0]
-                drug_name = row[1]
-                molecular_type = row[2]
-                chemical_structure = row[3]
-                inchi_key = row[4]
-                print(drug_id + "\t" + drug_name + "\t" + molecular_type + "\t" + chemical_structure + "\t" + inchi_key)
+        if opcion_letra2.lower() == "a":
+            query = "SELECT drug_id, drug_name, molecular_type, chemical_structure, inchi_key FROM drug WHERE drug_id IS NOT NULL AND drug_name IS NOT NULL AND molecular_type IS NOT NULL AND chemical_structure IS NOT NULL AND inchi_key IS NOT NULL LIMIT 10"
+            SQL.primeras_instancias(cursor, query, "fármacos", "Drug_id, Drug_name, Molecular_type, Chemical_structure, Inchi_key")
 
-        if opcion3==2:
-            query2 = "SELECT disease_id, disease_name FROM disease WHERE disease_id IS NOT NULL AND disease_name IS NOT NULL LIMIT 10"
-            cursor.execute(query2)
-            print("\nPRIMERAS 10 INSTANCIAS DE ENFERMEDADES")
-            for row in cursor:
-                disease_id = row[0]
-                disease_name = row[1]
-                print(disease_id + "\t" + disease_name)
+        elif opcion_letra2.lower() == "b":
+            query = "SELECT disease_id, disease_name FROM disease WHERE disease_id IS NOT NULL AND disease_name IS NOT NULL LIMIT 10"
+            SQL.primeras_instancias(cursor, query, "enfermedades", "Disease_id, Disease_name")
 
-        if opcion3==3:
-            query3 = "SELECT phenotype_id, phenotype_name FROM phenotype_effect WHERE phenotype_id IS NOT NULL AND phenotype_name IS NOT NULL LIMIT 10"
-            cursor.execute(query3)
-            print("\nPRIMERAS 10 INSTANCIAS DE EFECTOS FENOTÍPICOS")
-            for row in cursor:
-                phenotype_id = row[0]
-                phenotype_name = row[1]
-                print(phenotype_id + "\t" + phenotype_name)
+        elif opcion_letra2.lower() == "c":
+            query = "SELECT phenotype_id, phenotype_name FROM phenotype_effect WHERE phenotype_id IS NOT NULL AND phenotype_name IS NOT NULL LIMIT 10"
+            SQL.primeras_instancias(cursor, query, "efectos fenotípicos", "Phenotype_id, Phenotype_name")
 
-        if opcion3==4:
-            query4 = "SELECT target_id, target_name_pref, target_type, target_organism FROM target WHERE target_id IS NOT NULL AND target_name_pref IS NOT NULL AND target_type IS NOT NULL AND target_organism IS NOT NULL LIMIT 10"
-            cursor.execute(query4)
-            print("\nPRIMERAS 10 INSTANCIAS DE TARGET")
-            for row in cursor:
-                target_id = row[0]
-                target_name = row[1]
-                target_type = row[2]
-                target_organism = row[3]
-                print(target_id + "\t" + target_name + "\t" + target_type + "\t" + target_organism)
+        elif opcion_letra2.lower() == "d":
+            query = "SELECT target_id, target_name_pref, target_type, target_organism FROM target WHERE target_id IS NOT NULL AND target_name_pref IS NOT NULL AND target_type IS NOT NULL AND target_organism IS NOT NULL LIMIT 10"
+            SQL.primeras_instancias(cursor, query, "dianas", "Target_id, Target_name_pref, Target_type, Target_organism")
+
+        nueva_consulta()
 
 elif int(opcion) == 2:
     menus.menu_2()
 
-    opcion_letra = in_variable("\nIntroduzca una opción: ", re.compile("[Aa]|[Bb]|[Cc]"), "Introduzca a, b o c.")  
-    
+    opcion_letra = in_variable("\nIntroduzca una opción: ", re.compile("[Aa]|[Bb]|[Cc]"), "Introduzca a, b o c.")
+
     if opcion_letra.lower() == "a":
         drug_iden = in_variable("\nIntroduzca el drug id: ", re.compile("CHEMBL[1-9]+"), "Drug ID: CHEMBL + número")
         query = str("SELECT drug_name, molecular_type, chemical_structure, inchi_key from drug where drug_id= %s")
         SQL.consultar_unico(cursor, query, (drug_iden,), ("Drug Name", "Molecular type", "Chemical structure","InChi-Key"))
-    
+
     elif opcion_letra.lower() == "b":
         drug_nom = in_variable("\nIntroduzca el nombre de un fármaco: ", re.compile(".+"), "")
         query = "SELECT synonymous_name FROM synonymous, drug WHERE synonymous.drug_id=drug.drug_id AND drug.drug_name = %s"
@@ -181,42 +127,31 @@ elif int(opcion) == 2:
         drug_id = in_variable("\nIntroduzca el nombre del fármaco: ", re.compile("CHEMBL[1-9]+"), "Drug ID: CHEMBL + número")
         query = "SELECT ATC_code.ATC_code_id from ATC_code, drug WHERE drug.drug_id = %s GROUP BY drug.drug_id"
         SQL.consultar_filas(cursor, query, (drug_id,), ("\nCódigos ATC asociados al fármaco " + drug_id + ":"))
-    
+
     nueva_consulta()
 
 if int(opcion) ==3:
     menus.menu_3()
-    
 
-    opcion2=input("\n¿Qué opción desea realizar? [Introduzca el número de la funcion deseada]")
-    try:
-        opcion2=int(opcion2)
-        if opcion2<1 or opcion2>2:
-            print("ERROR: Debe introducir un número entero del 1 al 2.")
-            exit()
-    except:
-        print("ERROR: Debe introducir un número entero del 1 al 2.")
-        exit()
+    opcion_letra = in_variable("\nIntroduzca una opción: ", re.compile("[Aa]|[Bb]|"), "Introduzca a o b.")
 
-    if opcion2==1:
+    if opcion_letra.lower() == "a":
         disease_name = input('Introduce el nombre de la enfermedad: ')
 
-        query1 = "SELECT drug.drug_id, drug.drug_name FROM drug, drug_disease, disease WHERE disease.disease_name=%s AND drug.drug_id=drug_disease.drug_id AND disease.disease_id=drug_disease.disease_id"
-        cursor.execute(query1, (disease_name,))
-        for row in cursor:
-            drug_id = row[0]
-            drug_name = row[1]
-            print("Drug_id: %s" % drug_id)
-            print("Drug_name: %s" % drug_name)
+        query = "SELECT drug.drug_id, drug.drug_name FROM drug, drug_disease, disease WHERE disease.disease_name=%s AND drug.drug_id=drug_disease.drug_id AND disease.disease_id=drug_disease.disease_id"
+        params=(disease_name,)
+        SQL.consultar_filas(cursor, query, params, "Drug_id\tDrug name")
 
-    if opcion2==2:
-        query2 = "SELECT disease.disease_name, drug.drug_name FROM disease, drug, drug_disease WHERE drug.drug_id=drug_disease.drug_id AND disease.disease_id=drug_disease.disease_id ORDER BY drug_disease.inferred_score DESC LIMIT 1"
-        cursor.execute(query2)
+    elif opcion_letra.lower() == "b":
+        query = "SELECT disease.disease_name, drug.drug_name FROM disease, drug, drug_disease WHERE drug.drug_id=drug_disease.drug_id AND disease.disease_id=drug_disease.disease_id ORDER BY drug_disease.inferred_score DESC LIMIT 1"
+        cursor.execute(query)
         for row in cursor:
             disease_name = row[0]
             drug_name = row[1]
             print("Disease_name: %s" % disease_name)
             print("Drug_name: %s" % drug_name)
+
+    nueva_consulta()
 
 if int(opcion) == 4:
     menus.menu_4()
@@ -252,7 +187,7 @@ elif int(opcion) == 5:
         target_type = in_variable("\nIntroduzca el tipo de diana: ", re.compile("[A-Z]|-+"),"" )
 
         query = "SELECT target_name_pref FROM target WHERE target_type = %s ORDER BY target_name_pref ASC LIMIT 20"
-        
+
         SQL.consultar_filas(cursor, query, (target_type,), ("\nDianas de tipo " + target_type + ":"))
 
     elif opcion_letra.lower() == "b":
@@ -260,7 +195,7 @@ elif int(opcion) == 5:
         query = str("SELECT target_organism, count(target_id) "
                     "FROM target group by target_organism "
                     "ORDER BY COUNT(target_organism) DESC LIMIT 1")
-                    
+
         cursor.execute(query)
         for row in cursor:
             print("Organismo con mayor número de dianas: " + row[0] + "(" + row[1] + " dianas)")
@@ -325,39 +260,21 @@ elif int(opcion)==7:
     name_f=input("\n¿Cuál es el nombre del fármaco asociado?")
     add_dis="INSERT INTO disease VALUES (%s, %s, %s)"
     add_drug_dis="INSERT INTO drug_disease (disease_id, drug_id, source_id) VALUES (%s, (SELECT drug_id FROM drug WHERE drug_name=%s), 3)"
-    try:
-        cursor.execute(add_dis, (resource_id, id_d, name_d))
-        cursor.execute(add_drug_dis, (id_d, name_f))
-        print("\n - Inserción realizada con éxito - ")
-    except:
-        print("\nHa ocurrido un error")
-        exit()
+    db.start_transaction()
+    cursor.execute(add_dis, (resource_id, id_d, name_d))
+    cursor.execute(add_drug_dis, (id_d, name_f))
+    db.commit()
 
-    rep=input("\n¿Quiere hacer otra consulta? [S/N]")
-    if rep=="S":
-        system("python script1.py")
-    else:
-        exit()
+    nueva_consulta()
 
 elif int(opcion)==8:
     menus.menu_8()
 
     valor_min=input("\n¿Cuál es el valor minimo que de score de asociacion que desea?")
     upd="UPDATE drug_phenotype_effect SET score=0 WHERE score < %s AND phenotype_type LIKE 'SIDE EFFECT'"
-    try:
-        cursor.execute(upd, (valor_min,))
-        print("\n - Modificación realizada con éxito - ")
-    except:
-        print("\nHa ocurrido un error")
-        exit()
+    cursor.execute(upd, (valor_min,))
 
-    rep=input("\n¿Quiere hacer otra consulta? [S/N]")
-    if rep=="S":
-        system("python script1.py")
-    else:
-        exit()
+    nueva_consulta()
 
 elif int(opcion)==9:
     exit()
-
-

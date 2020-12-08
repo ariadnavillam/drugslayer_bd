@@ -29,8 +29,8 @@ def menu_1():
     system("cls")
     header("Información general")
     print("En esta ventana puedes obtener varios tipos de información:")
-    print("\n\t1. Número total")
-    print("\n\t2. Primeras 10 instancias")
+    print("\n\ta. Número total")
+    print("\n\tb. Primeras 10 instancias")
 
 def menu_1_1():
     system("cls")
@@ -40,10 +40,10 @@ def menu_1_2():
     system("cls")
     header("Información general")
     print("En esta ventana puedes obtener las diez primeras instancias de:")
-    print("\n\t1. Fármacos")
-    print("\n\t2. Enfermedades")
-    print("\n\t3. Efectos fenotipicos")
-    print("\n\t4. Dianas")
+    print("\n\ta. Fármacos")
+    print("\n\tb. Enfermedades")
+    print("\n\tc. Efectos fenotipicos")
+    print("\n\td. Dianas")
 
 
 def menu_2():
@@ -58,8 +58,8 @@ def menu_3():
     system("cls")
     header("Información de las enfermedades")
     print("En esta ventana puedes obtener información sobre las enfermedades:")
-    print("\n\t1. Fármacos para una enfermedad")
-    print("\n\t2. Fármaco y enfermedad con el mayor score de asociación")
+    print("\n\ta. Fármacos para una enfermedad")
+    print("\n\tb. Fármaco y enfermedad con el mayor score de asociación")
 
 def menu_4():
     system("cls")
