@@ -10,7 +10,6 @@ def header(titulo):
     print("|" + " " * int(esp) + titulo + " " * int(esp) + " |")
     print(" " + "-" * long)
 
-
 def principal():
     system("cls")
     header("BASE DE DATOS")
@@ -47,7 +46,6 @@ def menu_1_2():
     print("\n\tc. Efectos fenotipicos")
     print("\n\td. Dianas")
 
-
 def menu_2():
     system("cls")
     header("Informacion de los farmacos")
@@ -80,7 +78,6 @@ def menu_5():
     print("En esta ventana puedes obtener informacion sobre las dianas de un farmaco:")
     print("\n\ta. Dianas de un tipo dado")
     print("\n\tb. Organismo al cual se asocian un mayor numero de dianas")
-
 
 def menu_6():
     system("cls")
