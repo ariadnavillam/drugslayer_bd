@@ -70,7 +70,7 @@ def menu_4():
     print("          b. Efectos secundarios de un fármaco: muestra quellos efectos \n"
           "             fenotípicos categorizados como efectos secundarios generados\n"
           "             por el farmaco ordenados de forma descendiente en base a la \n"
-          "             evidencia de esta asociacion\n")
+          "             evidencia de esta asociacion.\n")
 
 def menu_5():
     system("cls")
@@ -89,15 +89,16 @@ def menu_6():
 def menu_7():
     system("cls")
     header("Inserciones")
-    print("En esta ventana podras añadir una nueva enfermedad con su farmaco asociado")
+    print("En esta ventana podras añadir una nueva enfermedad con su farmaco asociado.")
 
 def menu_8():
     system("cls")
     header("Modificaciones")
-    print("En esta ventana podrás establecer como 0 el score")
+    print("En esta ventana podrás establecer como 0 el score de aquellas asociaciones \n"
+          "entre fármacos y efectos secundarios por debajo del valor deseado.")
 
 def final(database):
     header("Adios")
-    print("Sus consultas se han guardado en el archivo 'Resultados.txt'")
+    print("Sus consultas se han guardado en el archivo 'Resultados.txt'.")
     database.close()
     exit()
