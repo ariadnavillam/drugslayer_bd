@@ -13,7 +13,6 @@ def in_variable(texto, patron, texto_alt):
         var = input(texto)
         if patron.match(var):
             break
-
         elif var == "exit":
             exit()
         else:
@@ -22,6 +21,9 @@ def in_variable(texto, patron, texto_alt):
     return var
 
 def nueva_consulta():
+    """
+    Función para realizar otra consulta una vez completada otra
+    """
     rep=in_variable("\n¿Quiere hacer otra consulta? [S/N]", re.compile("[Ss]|[Nn]"),"\n¿Quiere hacer otra consulta? [S/N]")
     if rep.upper()=="S":
         ruta = getcwd()
@@ -233,16 +235,16 @@ elif int(opcion) == 6:
 elif int(opcion)==7:
     menus.menu_7()
 
-    id_d=input("\n¿Qué identificador desea introducir?")
-    print("Fuente del identificador")
-    print("\n\t1.OMIM")
-    print("\n\t2.MESH")
-    r_id=input("¿Cuál es la fuente del identificador introducido?")
-    if r_id==1:
-        resource_id="72"
-    if r_id==2:
-        resource_id="75"
-
+    id_d= in_variable("\n¿Qué identificador desea introducir?", re.compile("[1-9]+"), "Error. Introduzca un número.")
+    print("\nHay dos posibles fuentes del identificador introducido:")
+    print("\n\t1. OMIM")
+    print("\n\t2. MESH")
+    resource_id = in_variable("\n¿Cuál es la fuente del identificador introducido?", re.compile("[1-2]"), "Error. Introduzca un número.")
+    if int(resource_id)==1:
+        resource_id=72
+    if int(resource_id)==2:
+        resource_id=75
+        
     name_d=input("\n¿Qué nombre desea introducir?")
     name_f=input("\n¿Cuál es el nombre del fármaco asociado?")
     add_dis="INSERT INTO disease VALUES (%s, %s, %s)"
@@ -258,8 +260,8 @@ elif int(opcion)==8:
     menus.menu_8()
 
     valor_min=input("\n¿Cuál es el valor minimo que de score de asociacion que desea?")
-    upd="UPDATE drug_phenotype_effect SET score=0 WHERE score < %s AND phenotype_type LIKE 'SIDE EFFECT'"
-    cursor.execute(upd, (valor_min,))
+    query="UPDATE drug_phenotype_effect SET score=0 WHERE score < %s AND phenotype_type LIKE 'SIDE EFFECT'"
+    cursor.execute(query, (valor_min,))
 
     nueva_consulta()
 
