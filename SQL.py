@@ -14,9 +14,15 @@ def primeras_instancias(cursor, query, header, nombre_columnas):
         print(fila)
 
 
-def consultar_filas(cursor, query, params, header):
+def consultar_filas(cursor, query, header, params=None, title=None):
     header.count("\t")
-    cursor.execute(query, params)
+    if title !=None:
+        print(title)
+
+    if params != None:
+        cursor.execute(query,params)
+    else:
+        cursor.execute(query)
     print(header)
     for row in cursor:
         fila = str()
@@ -44,13 +50,16 @@ def consultar_filas_imprimir(cursor, query, params, header, file):
 
     f.close()
 
-def consultar_unico(cursor, query, params, header):
+def consultar_unico(cursor, query, header, params=None):
     header.count("\t")
-    cursor.execute(query, params)
+    if params != None:
+        cursor.execute(query,params)
+    else:
+        cursor.execute(query)
     print("")
     for row in cursor:
         for i in range(len(header)):
-            print(header[i] + " : " + row[i])
+            print(header[i] + " : " + str(row[i]))
 
 
 def insertar():

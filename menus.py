@@ -52,7 +52,7 @@ def menu_2():
     print("En esta ventana puedes obtener varios tipos de información:")
     print("\n\ta. Información general del fármaco")
     print("\n\tb. Sinónimos de un fármaco")
-    print("\n\tb. Código ATC de un fármaco")
+    print("\n\tc. Código ATC de un fármaco")
 
 def menu_3():
     system("cls")
@@ -96,3 +96,11 @@ def menu_8():
     system("cls")
     header("Modificaciones")
     print("En esta ventana podrás establecer como 0 el score")
+
+def final(database):
+    header("Adios")
+    print("Sus consultas se han guardado en el archivo 'Resultados.txt'")
+    database.close()       
+    exit()
+
+
