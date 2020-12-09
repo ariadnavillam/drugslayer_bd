@@ -91,6 +91,11 @@ def menu_7():
     header("Inserciones")
     print("En esta ventana podras añadir una nueva enfermedad con su farmaco asociado.")
 
+def menu_7_1():
+    print("\nHay dos posibles fuentes del identificador introducido:")
+    print("\n\ta. OMIM")
+    print("\n\tb. MESH")
+
 def menu_8():
     system("cls")
     header("Modificaciones")
