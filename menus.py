@@ -3,10 +3,10 @@
 from os import system
 
 def header(titulo):
-    long=80
-    long_palabra=len(titulo)
+    long = 80
+    long_palabra = len(titulo)
     print(" " + "-" * long)
-    esp=(long-long_palabra)/2
+    esp = (long - long_palabra)/2
     print("|" + " " * int(esp) + titulo + " " * int(esp) + " |")
     print(" " + "-" * long)
 
@@ -67,8 +67,8 @@ def menu_4():
     print("En esta ventana podra consultar información de los efectos fenotípicos \nasociados un farmaco:")
     print("Opciones: a. Indicaciones del farmaco: muestra los efectos fenotipicos \n"
           "             que sean indicaciones para las cuales se utiliza el farmaco.\n")
-    print("          b. Efectos secundarios de un fármaco: muestra quellos efectos \n"
-          "             fenotípicos categorizados como efectos secundarios generados\n"
+    print("          b. Efectos secundarios de un fármaco: muestra aquellos efectos \n"
+          "             fenotipicos categorizados como efectos secundarios generados\n"
           "             por el farmaco ordenados de forma descendiente en base a la \n"
           "             evidencia de esta asociacion.\n")
 
@@ -84,7 +84,7 @@ def menu_6():
     header("Borrados")
     print("En esta ventana podras borrar asociacion entre un farmaco y una enfermedad \n"
           "con un score muy bajo. En pantalla se muestran las 10 relaciones con un score\n "
-          "mas bajo. Escriba el nombre del farmaco y el nombre de la enfermedad separadas por un guión (-).")
+          "mas bajo. Escriba el nombre del farmaco y el nombre de la enfermedad separadas por un guion (-).")
 
 def menu_7():
     system("cls")
@@ -95,7 +95,7 @@ def menu_8():
     system("cls")
     header("Modificaciones")
     print("En esta ventana podrás establecer como 0 el score de aquellas asociaciones \n"
-          "entre fármacos y efectos secundarios por debajo del valor deseado.")
+          "entre farmacos y efectos secundarios por debajo del valor deseado.")
 
 def final(database):
     header("Adios")
