@@ -22,7 +22,7 @@ def in_variable(texto, patron, texto_alt):
 
 def nueva_consulta():
     """
-    Función para realizar otra consulta una vez se complete una
+    Función para realizar otra consulta una vez se complete la anterior
     """
     rep=in_variable("\n¿Quiere hacer otra consulta? [S/N]", re.compile("[Ss]|[Nn]"),"\n¿Quiere hacer otra consulta? [S/N]")
     if rep.upper()=="S":
@@ -237,12 +237,11 @@ elif int(opcion) == 7:
     menus.menu_7_1()
 
     type_id = in_variable("\n¿Cuál es la fuente del identificador introducido?", re.compile("[Aa]|[Bb]"), "Introduzca a o b")
-    resource_id=SQL.fuente_identificador(type_id)
     disease_name = in_variable("\nIntroduzca el nombre de la enfermedad: ", re.compile(".+"), "")
     drug_name = in_variable("\nIntroduzca el nombre del farmaco asociado: ", re.compile(".+"), "")
     SQL.comprobar(cursor, drug_name, "drug_name", "drug")
 
-    SQL.insertar(db, cursor, disease_id, resource_id, disease_name, drug_name)
+    SQL.insertar(db, cursor, disease_id, type_id, disease_name, drug_name)
 
     nueva_consulta()
 
