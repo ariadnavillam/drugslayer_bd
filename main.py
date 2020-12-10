@@ -104,7 +104,7 @@ elif int(opcion) == 2:
     if opcion_letra.lower() == "a":
         drug_id = in_variable("\nIntroduzca el ID del farmaco: ", re.compile("CHEMBL[1-9]+"), "Drug ID: CHEMBL + número")
         SQL.comprobar(cursor, drug_id, "drug_id", "drug")
-        query = str("SELECT drug_name, molecular_type, chemical_structure, inchi_key from drug where drug_id= %s")
+        query = str("SELECT drug_name, molecular_type, chemical_structure, inchi_key FROM drug WHERE drug_id= %s")
         SQL.consultar_unico(cursor, query, ("Drug Name", "Molecular type", "Chemical structure","InChi-Key"), params=(drug_id,))
 
     elif opcion_letra.lower() == "b":
@@ -116,7 +116,7 @@ elif int(opcion) == 2:
     elif opcion_letra.lower() == "c":
         drug_id = in_variable("\nIntroduzca el ID del farmaco: ", re.compile("CHEMBL[1-9]+"), "Drug ID: CHEMBL + número")
         SQL.comprobar(cursor, drug_id, "drug_id", "drug")
-        query = "SELECT ATC_code.ATC_code_id from ATC_code, drug WHERE drug.drug_id = %s GROUP BY drug.drug_id"
+        query = "SELECT ATC_code.ATC_code_id FROM ATC_code, drug WHERE drug.drug_id = %s GROUP BY drug.drug_id"
         SQL.consultar_filas(cursor, query, ("\nCódigos ATC asociados al fármaco " + drug_id + ":"), params=(drug_id,))
 
     nueva_consulta()
@@ -149,7 +149,8 @@ if int(opcion) == 4:
     if opcion_letra.lower() == "a":
         query = str("SELECT phenotype_effect.phenotype_id, phenotype_effect.phenotype_name "
                     "FROM phenotype_effect, drug_phenotype_effect "
-                    "WHERE drug_phenotype_effect.drug_id = %s AND drug_phenotype_effect.phenotype_id = phenotype_effect.phenotype_id ")
+                    "WHERE drug_phenotype_effect.drug_id = %s "
+                    "AND drug_phenotype_effect.phenotype_id = phenotype_effect.phenotype_id ")
 
         SQL.consultar_filas(cursor, query, "\nPhenotype ID\tPhenotype effect" , params=(drug_id,))
 
