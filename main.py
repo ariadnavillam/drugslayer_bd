@@ -54,6 +54,15 @@ except mysql.connector.Error as err:
     elif err.errno == errorcode.ER_BAD_DB_ERROR:
         print("La base de datos 'disnet_drugslayer' no existe.")
         exit()
+    elif err.errno == errorcode.ER_TOO_LONG_IDENT:
+        print("La variable introducida es demasiado larga")
+        exit()
+    elif err.errno == errorcode.ER_DUP_ENTRY:
+        print("El identificador introducido ya se encuentra en la base de datos")
+        exit()
+    elif err.errno == errorcode.ER_UNKNOWN_TABLE:
+        print("No se conoce la tabla indicada")
+        exit()
     else:
         print(err)
         exit()
@@ -110,13 +119,13 @@ elif int(opcion) == 2:
     elif opcion_letra.lower() == "b":
         drug_name = in_variable("\nIntroduzca el nombre de un farmaco: ", re.compile(".+"), "")
         SQL.comprobar(cursor, drug_name, "drug_name", "drug")
-        query = "SELECT synonymous_name FROM synonymous, drug WHERE synonymous.drug_id=drug.drug_id AND drug.drug_name = %s"
+        query = "SELECT synonymous_name FROM synonymous s, drug d WHERE s.drug_id=d.drug_id AND d.drug_name = %s"
         SQL.consultar_filas(cursor, query, ("\nSinónimos de " + drug_name + ":"), params=(drug_name,))
 
     elif opcion_letra.lower() == "c":
         drug_id = in_variable("\nIntroduzca el ID del farmaco: ", re.compile("CHEMBL[1-9]+"), "Drug ID: CHEMBL + número")
         SQL.comprobar(cursor, drug_id, "drug_id", "drug")
-        query = "SELECT ATC_code.ATC_code_id FROM ATC_code, drug WHERE drug.drug_id = %s GROUP BY drug.drug_id"
+        query = "SELECT ATC.ATC_code_id FROM ATC_code ATC, drug d WHERE d.drug_id = %s GROUP BY d.drug_id"
         SQL.consultar_filas(cursor, query, ("\nCódigos ATC asociados al fármaco " + drug_id + ":"), params=(drug_id,))
 
     nueva_consulta()
@@ -129,11 +138,11 @@ if int(opcion) == 3:
     if opcion_letra.lower() == "a":
         disease_name = input('\nIntroduce el nombre de la enfermedad: ')
         SQL.comprobar(cursor, disease_name, "disease_name", "disease")
-        query = "SELECT drug.drug_id, drug.drug_name FROM drug, drug_disease, disease WHERE disease.disease_name=%s AND drug.drug_id=drug_disease.drug_id AND disease.disease_id=drug_disease.disease_id"
+        query = "SELECT dr.drug_id, dr.drug_name FROM drug dr, drug_disease dr_di, disease di WHERE di.disease_name=%s AND dr.drug_id=dr_di.drug_id AND di.disease_id=dr_di.disease_id"
         SQL.consultar_filas(cursor, query, "\nDrug ID\tDrug name", params=(disease_name,))
 
     elif opcion_letra.lower() == "b":
-        query = "SELECT disease.disease_name, drug.drug_name FROM disease, drug, drug_disease WHERE drug.drug_id=drug_disease.drug_id AND disease.disease_id=drug_disease.disease_id ORDER BY drug_disease.inferred_score DESC LIMIT 1"
+        query = "SELECT di.disease_name, dr.drug_name FROM disease di, drug dr, drug_disease dr_di WHERE dr.drug_id=dr_di.drug_id AND di.disease_id=dr_disease.disease_id ORDER BY dr_di.inferred_score DESC LIMIT 1"
         SQL.consultar_unico(cursor, query, ("Disease name", "Drug name"))
 
     nueva_consulta()
@@ -147,20 +156,20 @@ if int(opcion) == 4:
     SQL.comprobar(cursor, drug_id, "drug_id", "drug")
 
     if opcion_letra.lower() == "a":
-        query = str("SELECT phenotype_effect.phenotype_id, phenotype_effect.phenotype_name "
-                    "FROM phenotype_effect, drug_phenotype_effect "
-                    "WHERE drug_phenotype_effect.drug_id = %s "
-                    "AND drug_phenotype_effect.phenotype_id = phenotype_effect.phenotype_id ")
+        query = str("SELECT ph.phenotype_id, ph.phenotype_name "
+                    "FROM phenotype_effect ph, drug_phenotype_effect dr_ph "
+                    "WHERE dr_ph.drug_id = %s "
+                    "AND dr_ph.phenotype_id = ph.phenotype_id ")
 
         SQL.consultar_filas(cursor, query, "\nPhenotype ID\tPhenotype effect" , params=(drug_id,))
 
     elif opcion_letra.lower() == "b":
-        query = str("SELECT phenotype_effect.phenotype_id, phenotype_effect.phenotype_name, drug_phenotype_effect.score "
-                    "FROM phenotype_effect, drug_phenotype_effect "
-                    "WHERE drug_phenotype_effect.drug_id = %s "
-                    "AND drug_phenotype_effect.phenotype_type LIKE 'SIDE EFFECT' "
-                    "AND drug_phenotype_effect.phenotype_id = phenotype_effect.phenotype_id "
-                    "ORDER BY drug_phenotype_effect.score DESC")
+        query = str("SELECT ph.phenotype_id, ph.phenotype_name, dr_ph.score "
+                    "FROM phenotype_effect ph, drug_phenotype_effect dr_ph "
+                    "WHERE dr_ph.drug_id = %s "
+                    "AND dr_ph.phenotype_type LIKE 'SIDE EFFECT' "
+                    "AND dr_ph.phenotype_id = ph.phenotype_id "
+                    "ORDER BY dr_ph.score DESC")
 
         SQL.consultar_filas(cursor, query, "\nPhenotype ID\tPhenotype name\tScore", params=(drug_id,))
 
