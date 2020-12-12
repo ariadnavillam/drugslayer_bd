@@ -32,6 +32,7 @@ def menu_1():
     print("En esta ventana puedes obtener varios tipos de informacion:")
     print("\n\ta. Numero total")
     print("\n\tb. Primeras 10 instancias")
+    print("\nIntroduzca 'esc' para volver al menu principal.")
 
 def menu_1_1():
     system("cls")
@@ -45,6 +46,7 @@ def menu_1_2():
     print("\n\tb. Enfermedades")
     print("\n\tc. Efectos fenotipicos")
     print("\n\td. Dianas")
+    print("\nIntroduzca 'esc' para volver al menu principal.")
 
 def menu_2():
     system("cls")
@@ -53,6 +55,7 @@ def menu_2():
     print("\n\ta. Informacion general del farmaco")
     print("\n\tb. Sinonimos de un farmaco")
     print("\n\tc. Código ATC de un farmaco")
+    print("\nIntroduzca 'esc' para volver al menu principal.")
 
 def menu_3():
     system("cls")
@@ -60,17 +63,20 @@ def menu_3():
     print("En esta ventana puedes obtener informacion sobre las enfermedades:")
     print("\n\ta. Farmacos para una enfermedad")
     print("\n\tb. Farmaco y enfermedad con el mayor score de asociacion")
+    print("\nIntroduzca 'esc' para volver al menu principal.")
 
 def menu_4():
     system("cls")
     header("Informacion de los efectos fenotipicos")
-    print("En esta ventana podra consultar información de los efectos fenotípicos \nasociados un farmaco:")
-    print("Opciones: a. Indicaciones del farmaco: muestra los efectos fenotipicos \n"
-          "             que sean indicaciones para las cuales se utiliza el farmaco.\n")
-    print("          b. Efectos secundarios de un fármaco: muestra aquellos efectos \n"
-          "             fenotipicos categorizados como efectos secundarios generados\n"
-          "             por el farmaco ordenados de forma descendiente en base a la \n"
-          "             evidencia de esta asociacion.\n")
+    print("En esta ventana podra consultar información de los efectos fenotípicos \n"
+          "asociados un farmaco. Opciones:\n")
+    print("\ta. Indicaciones del farmaco: muestra los efectos fenotipicos \n"
+          "\tque sean indicaciones para las cuales se utiliza el farmaco.\n")
+    print(" \tb. Efectos secundarios de un fármaco: muestra aquellos efectos \n"
+          "\tfenotipicos categorizados como efectos secundarios generados\n"
+          "\tpor el farmaco ordenados de forma descendiente en base a la \n"
+          "\tevidencia de esta asociacion.")
+    print("\nIntroduzca 'esc' para volver al menu principal.")
 
 def menu_5():
     system("cls")
@@ -78,12 +84,13 @@ def menu_5():
     print("En esta ventana puedes obtener informacion sobre las dianas de un farmaco:")
     print("\n\ta. Dianas de un tipo dado")
     print("\n\tb. Organismo al cual se asocian un mayor numero de dianas")
+    print("\nIntroduzca 'esc' para volver al menu principal.")
 
 def menu_6():
     system("cls")
     header("Borrados")
     print("En esta ventana podras borrar asociacion entre un farmaco y una enfermedad \n"
-          "con un score muy bajo. En pantalla se muestran las 10 relaciones con un score\n "
+          "con un score muy bajo. En pantalla se muestran las 10 relaciones con un score\n"
           "mas bajo. Escriba el nombre del farmaco y el nombre de la enfermedad separadas por un guion (-).")
 
 def menu_7():
