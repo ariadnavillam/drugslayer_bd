@@ -31,6 +31,14 @@ def nueva_consulta():
     else:
         menus.final(db)
 
+def volver_menu(opcion_letra):
+    """
+    Funcion para volver al menu principal
+    """
+    if opcion_letra.lower() == "esc":
+        ruta = getcwd()
+        system("python " + ruta + "\main.py")
+
 menus.principal()
 
 opcion = in_variable("\n¿Que función desea hacer? [Introduzca el número de la función deseada]", re.compile("[1-9]"), "Error. Introduzca un número.")
@@ -54,7 +62,16 @@ except mysql.connector.Error as err:
     elif err.errno == errorcode.ER_BAD_DB_ERROR:
         print("La base de datos 'disnet_drugslayer' no existe.")
         exit()
-    elif err.errno == errorcode.ER_TOO_LONG_IDENT:
+    else:
+        print(err)
+        exit()
+
+def errores():
+    """
+    Funcion para control de errores en relacion con MySQL WorkBench
+    """
+    err = mysql.connector.Error
+    if err.errno == errorcode.ER_TOO_LONG_IDENT:
         print("La variable introducida es demasiado larga")
         exit()
     elif err.errno == errorcode.ER_DUP_ENTRY:
@@ -63,14 +80,12 @@ except mysql.connector.Error as err:
     elif err.errno == errorcode.ER_UNKNOWN_TABLE:
         print("No se conoce la tabla indicada")
         exit()
-    else:
-        print(err)
-        exit()
 
 if int(opcion) == 1:
     menus.menu_1()
 
-    opcion_letra = in_variable("\nIntroduzca una opción: ", re.compile("[Aa]|[Bb]|"), "Introduzca a o b.")
+    opcion_letra = in_variable("\nIntroduzca una opción: ", re.compile("[Aa]|[Bb]|[esc]"), "Introduzca a o b.")
+    volver_menu(opcion_letra)
 
     if opcion_letra.lower() == "a":
         menus.menu_1_1()
@@ -108,7 +123,8 @@ if int(opcion) == 1:
 elif int(opcion) == 2:
     menus.menu_2()
 
-    opcion_letra = in_variable("\nIntroduzca una opción: ", re.compile("[Aa]|[Bb]|[Cc]"), "Introduzca a, b o c.")
+    opcion_letra = in_variable("\nIntroduzca una opción: ", re.compile("[Aa]|[Bb]|[esc]"), "Introduzca a o b.")
+    volver_menu(opcion_letra)
 
     if opcion_letra.lower() == "a":
         drug_id = in_variable("\nIntroduzca el ID del farmaco: ", re.compile("CHEMBL[1-9]+"), "Drug ID: CHEMBL + número")
@@ -125,15 +141,18 @@ elif int(opcion) == 2:
     elif opcion_letra.lower() == "c":
         drug_id = in_variable("\nIntroduzca el ID del farmaco: ", re.compile("CHEMBL[1-9]+"), "Drug ID: CHEMBL + número")
         SQL.comprobar(cursor, drug_id, "drug_id", "drug")
-        query = "SELECT ATC.ATC_code_id FROM ATC_code ATC, drug d WHERE d.drug_id = %s GROUP BY d.drug_id"
-        SQL.consultar_filas(cursor, query, ("\nCódigos ATC asociados al fármaco " + drug_id + ":"), params=(drug_id,))
+        query = "SELECT ATC.ATC_code_id FROM ATC_code ATC WHERE ATC.drug_id = %s GROUP BY ATC.drug_id"
+        try:
+            SQL.consultar_filas(cursor, query, ("\nCódigos ATC asociados al fármaco " + drug_id + ":"), params=(drug_id,))
+        except:
+            print("\nNo existen ningun codigo ATC asociado al farmaco.")
 
     nueva_consulta()
-
-if int(opcion) == 3:
+elif int(opcion) == 3:
     menus.menu_3()
 
-    opcion_letra = in_variable("\nIntroduzca una opción: ", re.compile("[Aa]|[Bb]|"), "Introduzca a o b.")
+    opcion_letra = in_variable("\nIntroduzca una opción: ", re.compile("[Aa]|[Bb]|[esc]"), "Introduzca a o b.")
+    volver_menu(opcion_letra)
 
     if opcion_letra.lower() == "a":
         disease_name = input('\nIntroduce el nombre de la enfermedad: ')
@@ -146,11 +165,11 @@ if int(opcion) == 3:
         SQL.consultar_unico(cursor, query, ("Disease name", "Drug name"))
 
     nueva_consulta()
-
-if int(opcion) == 4:
+elif int(opcion) == 4:
     menus.menu_4()
 
-    opcion_letra = in_variable("\nIntroduzca una opción: ", re.compile("[Aa]|[Bb]"), "Introduzca a o b")
+    opcion_letra = in_variable("\nIntroduzca una opción: ", re.compile("[Aa]|[Bb]|[esc]"), "Introduzca a o b.")
+    volver_menu(opcion_letra)
 
     drug_id = in_variable("\nIntroduzca el ID del farmaco: ", re.compile("CHEMBL[1-9]+"), "Drug ID: CHEMBL + número")
     SQL.comprobar(cursor, drug_id, "drug_id", "drug")
@@ -159,12 +178,13 @@ if int(opcion) == 4:
         query = str("SELECT ph.phenotype_id, ph.phenotype_name "
                     "FROM phenotype_effect ph, drug_phenotype_effect dr_ph "
                     "WHERE dr_ph.drug_id = %s "
-                    "AND dr_ph.phenotype_id = ph.phenotype_id ")
+                    "AND dr_ph.phenotype_id = ph.phenotype_id "
+                    "AND dr_ph.phenotype_type LIKE 'INDICATION'")
 
         SQL.consultar_filas(cursor, query, "\nPhenotype ID\tPhenotype effect" , params=(drug_id,))
 
     elif opcion_letra.lower() == "b":
-        query = str("SELECT ph.phenotype_id, ph.phenotype_name, dr_ph.score "
+        query = str("SELECT ph.phenotype_id, ph.phenotype_name "
                     "FROM phenotype_effect ph, drug_phenotype_effect dr_ph "
                     "WHERE dr_ph.drug_id = %s "
                     "AND dr_ph.phenotype_type LIKE 'SIDE EFFECT' "
@@ -178,7 +198,8 @@ if int(opcion) == 4:
 elif int(opcion) == 5:
     menus.menu_5()
 
-    opcion_letra = in_variable("\nIntroduzca una opción: ", re.compile("[Aa]|[Bb]"), "Introduzca a o b")
+    opcion_letra = in_variable("\nIntroduzca una opción: ", re.compile("[Aa]|[Bb]|[esc]"), "Introduzca a o b.")
+    volver_menu(opcion_letra)
 
     if opcion_letra.lower() == "a":
         target_type = in_variable("\nIntroduzca el tipo de diana: ", re.compile("[A-Z]|-+"),"" )
@@ -195,8 +216,6 @@ elif int(opcion) == 5:
         SQL.consultar_unico(cursor, query, ("Organismo con mayor número de dianas", "Número de dianas"))
 
     nueva_consulta()
-
-
 elif int(opcion) == 6:
     menus.menu_6()
 
@@ -238,7 +257,6 @@ elif int(opcion) == 6:
 
     for row in cursor:
         print (row)
-
 elif int(opcion) == 7:
     menus.menu_7()
 
@@ -254,7 +272,6 @@ elif int(opcion) == 7:
     SQL.insertar(db, cursor, disease_id, type_id, disease_name, drug_name)
 
     nueva_consulta()
-
 elif int(opcion) == 8:
     menus.menu_8()
 
@@ -262,6 +279,5 @@ elif int(opcion) == 8:
     SQL.modificar(cursor, valor_min)
 
     nueva_consulta()
-
 elif int(opcion) == 9:
     menus.final(db)
