@@ -2,7 +2,6 @@ def contar_instancias(cursor, columna, tabla, header):
     """
     Función para contar todas las instancias de una tabla
     """
-
     query = str("SELECT COUNT(" + columna + ") FROM " + tabla)
     cursor.execute(query)
     for row in cursor:
@@ -12,7 +11,6 @@ def consultar_filas(cursor, query, header, params=None, title=None):
     """
     Funcion para obtener las filas tras una consulta con o sin parametros
     """
-
     header.count("\t")
     cursor.execute(query, params)
     if title != None:
@@ -51,7 +49,6 @@ def consultar_unico(cursor, query, header, params = None):
     """
     Funcion para obtener el valor maximo o minimo
     """
-
     header.count("\t")
     cursor.execute(query, params)
     print("")
@@ -66,7 +63,6 @@ def fuente_identificador(type_id):
     """
     Función para establecer el valor de "resource_id" según sea la fuente del id
     """
-
     if type_id.lower() == "a":
         resource_id = "72"
     if type_id.lower() == "b":
@@ -77,7 +73,6 @@ def insertar(db, cursor, disease_id, type_id, disease_name, drug_name):
     """
     Funcion para insertar una el id y nombre de una enfermedad, ademas de un farmaco asociado
     """
-
     resource_id=fuente_identificador(type_id)
     query_add_dis="INSERT INTO disease VALUES (%s, %s, %s)"
     query_add_drug_dis="INSERT INTO drug_disease (disease_id, drug_id, source_id) VALUES (%s, (SELECT drug_id FROM drug WHERE drug_name=%s), 3)"
@@ -91,7 +86,6 @@ def modificar(cursor, valor_min):
     """
     Funcion para establecer a 0 el indice de asociacion por debajo de un valor introducido por teclado
     """
-
     query="UPDATE drug_phenotype_effect SET score=0 WHERE score < %s AND phenotype_type LIKE 'SIDE EFFECT'"
     cursor.execute(query, (valor_min,))
 
@@ -99,7 +93,6 @@ def comprobar(cursor, variable, columna, tabla):
     """
     Funcion para comprobar que el valor introducido existe en la base de datos
     """
-
     query = str("SELECT * FROM " + tabla + " WHERE " + columna + " LIKE " + "'" + variable + "'")
     cursor.execute(query)
     count = 0
