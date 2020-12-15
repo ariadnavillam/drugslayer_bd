@@ -39,10 +39,6 @@ def volver_menu(opcion_letra):
         ruta = getcwd()
         system("python " + ruta + "\main.py")
 
-def continuar():
-    opcion_continuar=in_variable("\n¿Desea continuar? [S/N]", re.compile("[Ss]|[Nn]"),"\n¿Desea continuar? [S/N]")
-    if opcion_continuar.lower() == "n":
-        volver_menu()
 
 # CONEXION A LA BASE DE DATOS
 config = {
