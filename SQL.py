@@ -53,13 +53,6 @@ def fuente_identificador(type_id):
         resource_id = "75"
     return resource_id
 
-<<<<<<< HEAD
-def insertar(db, cursor, query_add_dis, query_add_drug_dis, disease_id, type_id, disease_name, drug_name):
-    """
-    Funcion para insertar una el id y nombre de una enfermedad, ademas de un farmaco asociado
-    """
-    resource_id=fuente_identificador(type_id)
-=======
 def insertar(db, cursor, query_add_dis, query_add_drug_dis, disease_id, type_id, disease_name, drug_name, existe):
     """
     Funcion para insertar una el id y nombre de una enfermedad, ademas de un farmaco asociado
@@ -71,7 +64,6 @@ def insertar(db, cursor, query_add_dis, query_add_drug_dis, disease_id, type_id,
             cursor.execute(query_add_dis, (resource_id, disease_id, disease_name,))
             cursor.execute(query_add_drug_dis, (disease_id, drug_name,))
             db.commit()
->>>>>>> cfba93f6c1e3e6ad1ef0c819f4a61b68a36776de
 
         except mysql.connector.Error as err:
             if err.errno == errorcode.ER_DUP_ENTRY: 
@@ -103,14 +95,9 @@ def comprobar(cursor, variable, columna, tabla):
     for row in cursor:
         count = count + 1
     if count == 0:
-<<<<<<< HEAD
-        print("\nEl valor introducido: " + variable + ", para la columna " + columna + " de la tabla " + tabla + " no existe en la base de datos")
-        exit()
-=======
         print("\nEl valor introducido: " + variable + ", para la columna " + columna + " de la tabla " + tabla + " no existe en la base de datos.")
         var = False
     else:
         var = True
     
     return var
->>>>>>> cfba93f6c1e3e6ad1ef0c819f4a61b68a36776de

@@ -1,3 +1,4 @@
+import numpy as np
 from os import system, getcwd
 import re
 import mysql.connector
@@ -14,7 +15,7 @@ def in_variable(texto, patron, texto_alt):
         if patron.match(var):
             break
         elif var == "exit":
-            menus.final(db)
+            exit()
         else:
             print(texto_alt)
             continue
@@ -28,18 +29,6 @@ def nueva_consulta():
     if rep.upper() == "N":
         menus.final(db)
 
-<<<<<<< HEAD
-def volver_menu(opcion_letra):
-    """
-    Funcion para volver al menu principal
-    """
-    if opcion_letra.lower() == "esc":
-        ruta = getcwd()
-        system("python " + ruta + "\main.py")
-
-
-=======
->>>>>>> cfba93f6c1e3e6ad1ef0c819f4a61b68a36776de
 # CONEXION A LA BASE DE DATOS
 config = {
     'user': 'drugslayer',
@@ -147,11 +136,7 @@ while True:
 
         if opcion_letra.lower() == "a":
             drug_id = in_variable("\nIntroduzca el ID del farmaco: ", re.compile("CHEMBL[1-9]+"), "Drug ID: CHEMBL + número")
-<<<<<<< HEAD
-            count=SQL.comprobar(cursor, drug_id, "drug_id", "drug")
-=======
             comprobar_existe = SQL.comprobar(cursor, drug_id, "drug_id", "drug")
->>>>>>> cfba93f6c1e3e6ad1ef0c819f4a61b68a36776de
             query = str("SELECT drug_name, molecular_type, chemical_structure, inchi_key FROM drug WHERE drug_id= %s")
             SQL.consultar_unico(cursor, query, ("Drug Name", "Molecular type", "Chemical structure","InChi-Key"), existe = comprobar_existe, params=(drug_id,))
 
@@ -165,11 +150,6 @@ while True:
             drug_id = in_variable("\nIntroduzca el ID del farmaco: ", re.compile("CHEMBL[1-9]+"), "Drug ID: CHEMBL + número")
             comprobar_existe = SQL.comprobar(cursor, drug_id, "drug_id", "drug")
             query = "SELECT ATC_code_id FROM ATC_code WHERE drug_id = %s GROUP BY drug_id"
-<<<<<<< HEAD
-            SQL.consultar_filas(cursor, query, ("\nCódigos ATC asociados al fármaco " + drug_id + ":"), params=(drug_id,))
-
-            #hay que comprobar
-=======
             ###################
             SQL.consultar_filas(cursor, query, ("\nCódigos ATC asociados al fármaco " + drug_id + ":"), existe = comprobar_existe, params=(drug_id,))
             
@@ -177,7 +157,6 @@ while True:
         
         else:
             continue
->>>>>>> cfba93f6c1e3e6ad1ef0c819f4a61b68a36776de
 
         nueva_consulta()
 
@@ -280,7 +259,6 @@ while True:
     #Opcion 6: Borrado
     elif int(opcion) == 6:
         menus.menu_6()
-        continuar()
 
         #opcion para elegir si se quiere continuar o volver al menú principal
         opcion_continuar = in_variable("\n¿Desea continuar? [S/N] ", re.compile("[Ss|Nn]"), "Introduzca S o N.")
@@ -292,7 +270,7 @@ while True:
                     "WHERE dr_di.drug_id = dr.drug_id "
                     "AND dr_di.disease_id = di.disease_id "
                     "AND dr_di.inferred_score IS NOT null "
-                    "ORDER BY inferred_score, dr.drug_name, di.disease_name ASC "
+                    "ORDER BY inferred_score ASC "
                     "LIMIT 10")
 
         cursor.execute(query)
@@ -347,14 +325,7 @@ while True:
         query_add_dis="INSERT INTO disease VALUES (%s, %s, %s)"
         query_add_drug_dis="INSERT INTO drug_disease (disease_id, drug_id, source_id) VALUES (%s, (SELECT drug_id FROM drug WHERE drug_name=%s), 3)"
 
-<<<<<<< HEAD
-        query_add_dis="INSERT INTO disease VALUES (%s, %s, %s)"
-        query_add_drug_dis="INSERT INTO drug_disease (disease_id, drug_id, source_id) VALUES (%s, (SELECT drug_id FROM drug WHERE drug_name=%s), 3)"
-
-        SQL.insertar(db, cursor, query_add_dis, query_add_drug_dis, disease_id, type_id, disease_name, drug_name)
-=======
         SQL.insertar(db, cursor, query_add_dis, query_add_drug_dis, disease_id, type_id, disease_name, drug_name, comprobar_existe)
->>>>>>> cfba93f6c1e3e6ad1ef0c819f4a61b68a36776de
 
         nueva_consulta()
 
@@ -375,31 +346,3 @@ while True:
     elif int(opcion) == 9:
         menus.final(db)
 
-<<<<<<< HEAD
-except mysql.connector.Error as err:
-    if err.errno == errorcode.ER_DUP_ENTRY:
-        print("\nERROR: El identificador introducido ya se encuentra en la base de datos")
-        exit()
-    elif err.errno == errorcode.ER_NO_SUCH_TABLE:
-        print("\nERROR: No existe la tabla indicada")
-        exit()
-    elif err.errno == errorcode.ER_SYNTAX_ERROR:
-        print("\nERROR: Sintaxis incorrecta")
-        exit()
-    elif err.errno == errorcode.ER_WRONG_VALUE_FOR_VAR:
-        print("\nERROR: No se puede establecer ese valor de la variable")
-        exit()
-    elif err.errno == errorcode.ER_SUBQUERY_NO_1_ROW:
-        print("\nERROR: La subconsulta retorna mas de una fila")
-        exit()
-    elif err.errno == errorcode.ER_QUERY_INTERRUPTED:
-        print("\nERROR: La query fue interrumpida")
-        exit()
-    elif err.errno == errorcode.ER_DATA_TOO_LONG:
-        print("\nERROR: La variable introducida es demasiado larga")
-        exit()
-    else:
-        print(err)
-        exit()
-=======
->>>>>>> cfba93f6c1e3e6ad1ef0c819f4a61b68a36776de
