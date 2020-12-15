@@ -286,8 +286,9 @@ while True:
             var_in = input("Introduzca nombre de la relacion a eliminar : ")
             if var_in == "exit":
                 exit()
-
+            var_in = var_in.strip()
             dd = var_in.split("-")
+            print(dd)
             if dd[0] in drug_name_id and dd[1] in disease_name_id:
                 drug_id = drug_name_id[dd[0]]
                 disease_id = disease_name_id[dd[1]]
@@ -295,12 +296,12 @@ while True:
             else:
                 print("Relacion no valida")
 
-        query = str("SELECT * FROM drug_disease "
-                    "WHERE drug_id=%s AND disease_id=%s")
-        #query = "DELETE FROM drug_disease "
-        #        "WHERE drug_id='%s' AND disease_id='%s'" %(drug_id,disease_id)
+        # query = str("SELECT * FROM drug_disease "
+        #             "WHERE drug_id=%s AND disease_id=%s")
+        query = str("DELETE FROM drug_disease "
+                "WHERE drug_id=%s AND disease_id=%s")
 
-        SQL.eliminar(cursor, query,(drug_id, disease_id,))
+        SQL.eliminar(cursor, query, (drug_id, disease_id,))
 
         for row in cursor:
             print (row)
