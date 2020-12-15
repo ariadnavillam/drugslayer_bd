@@ -69,24 +69,21 @@ def fuente_identificador(type_id):
         resource_id = "75"
     return resource_id
 
-def insertar(db, cursor, disease_id, type_id, disease_name, drug_name):
+def insertar(db, cursor, query_add_dis, query_add_drug_dis, disease_id, type_id, disease_name, drug_name):
     """
     Funcion para insertar una el id y nombre de una enfermedad, ademas de un farmaco asociado
     """
     resource_id=fuente_identificador(type_id)
-    query_add_dis="INSERT INTO disease VALUES (%s, %s, %s)"
-    query_add_drug_dis="INSERT INTO drug_disease (disease_id, drug_id, source_id) VALUES (%s, (SELECT drug_id FROM drug WHERE drug_name=%s), 3)"
 
     db.start_transaction()
     cursor.execute(query_add_dis, (resource_id, disease_id, disease_name,))
     cursor.execute(query_add_drug_dis, (disease_id, drug_name,))
     db.commit()
 
-def modificar(cursor, valor_min):
+def modificar(cursor, query, valor_min):
     """
     Funcion para establecer a 0 el indice de asociacion por debajo de un valor introducido por teclado
     """
-    query="UPDATE drug_phenotype_effect SET score=0 WHERE score < %s AND phenotype_type LIKE 'SIDE EFFECT'"
     cursor.execute(query, (valor_min,))
 
 def comprobar(cursor, variable, columna, tabla):
@@ -99,5 +96,5 @@ def comprobar(cursor, variable, columna, tabla):
     for row in cursor:
         count = count + 1
     if count == 0:
-        print("\nEl valor introducido: " + variable + ", para la columna " + columna + " de la tabla " + tabla + " es incorrecto")
+        print("\nEl valor introducido: " + variable + ", para la columna " + columna + " de la tabla " + tabla + " no existe en la base de datos")
         exit()

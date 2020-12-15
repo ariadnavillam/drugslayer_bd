@@ -161,11 +161,9 @@ try:
             drug_id = in_variable("\nIntroduzca el ID del farmaco: ", re.compile("CHEMBL[1-9]+"), "Drug ID: CHEMBL + número")
             SQL.comprobar(cursor, drug_id, "drug_id", "drug")
             query = "SELECT ATC_code_id FROM ATC_code WHERE drug_id = %s GROUP BY drug_id"
-            try:
-                SQL.consultar_filas(cursor, query, ("\nCódigos ATC asociados al fármaco " + drug_id + ":"), params=(drug_id,))
-            except:
-                print("\nNo existen ningun codigo ATC asociado al farmaco.")
-                exit()
+            SQL.consultar_filas(cursor, query, ("\nCódigos ATC asociados al fármaco " + drug_id + ":"), params=(drug_id,))
+
+            #hay que comprobar
 
         nueva_consulta()
 
@@ -311,7 +309,10 @@ try:
         drug_name = in_variable("\nIntroduzca el nombre del farmaco asociado: ", re.compile(".+"), "")
         SQL.comprobar(cursor, drug_name, "drug_name", "drug")
 
-        SQL.insertar(db, cursor, disease_id, type_id, disease_name, drug_name)
+        query_add_dis="INSERT INTO disease VALUES (%s, %s, %s)"
+        query_add_drug_dis="INSERT INTO drug_disease (disease_id, drug_id, source_id) VALUES (%s, (SELECT drug_id FROM drug WHERE drug_name=%s), 3)"
+
+        SQL.insertar(db, cursor, query_add_dis, query_add_drug_dis, disease_id, type_id, disease_name, drug_name)
 
         nueva_consulta()
 
@@ -319,7 +320,8 @@ try:
         menus.menu_8()
 
         valor_min= in_variable("\nIntroduzca el valor minimo de score de asociacion que desea:", re.compile("[0-9]+"), "Error. Introduzca un número.")
-        SQL.modificar(cursor, valor_min)
+        query="UPDATE drug_phenotype_effect SET score=0 WHERE score < %s AND phenotype_type LIKE 'SIDE EFFECT'"
+        SQL.modificar(cursor, query, valor_min)
 
         nueva_consulta()
 
@@ -327,10 +329,7 @@ try:
         menus.final(db)
 
 except mysql.connector.Error as err:
-    if err.errno == errorcode.ER_EMPTY_QUERY:
-        print("\nERROR: La query introducida esta vacia")
-        exit()
-    elif err.errno == errorcode.ER_DUP_ENTRY:
+    if err.errno == errorcode.ER_DUP_ENTRY:
         print("\nERROR: El identificador introducido ya se encuentra en la base de datos")
         exit()
     elif err.errno == errorcode.ER_NO_SUCH_TABLE:
@@ -338,12 +337,6 @@ except mysql.connector.Error as err:
         exit()
     elif err.errno == errorcode.ER_SYNTAX_ERROR:
         print("\nERROR: Sintaxis incorrecta")
-        exit()
-    elif err.errno == errorcode.ER_WRONG_COLUMN_NAME:
-        print("\nERROR: El nombre de la columna es incorrecto")
-        exit()
-    elif err.errno == errorcode.ER_WRONG_NUMBER_OF_COLUMNS_IN_SELECT:
-        print("\nERROR: El número de columnas introducidas es incorrecto")
         exit()
     elif err.errno == errorcode.ER_WRONG_VALUE_FOR_VAR:
         print("\nERROR: No se puede establecer ese valor de la variable")
