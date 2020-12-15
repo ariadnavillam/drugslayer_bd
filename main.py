@@ -303,9 +303,6 @@ while True:
 
         SQL.eliminar(cursor, query, (drug_id, disease_id,))
 
-        for row in cursor:
-            print (row)
-
     #Opcion 7: Inserciones
     elif int(opcion) == 7:
         menus.menu_7()
