@@ -111,6 +111,6 @@ def menu_8():
 
 def final(database):
     header("Adios")
-    print("Sus consultas se han guardado en el archivo 'Resultados.txt'.")
+    print("¡Que tenga un buen dia!")
     database.close()
     exit()
