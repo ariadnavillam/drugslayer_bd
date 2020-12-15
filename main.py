@@ -14,7 +14,7 @@ def in_variable(texto, patron, texto_alt):
         if patron.match(var):
             break
         elif var == "exit":
-            exit()
+            menus.final(db)
         else:
             print(texto_alt)
             continue
@@ -38,6 +38,11 @@ def volver_menu(opcion_letra):
     if opcion_letra.lower() == "esc":
         ruta = getcwd()
         system("python " + ruta + "\main.py")
+
+def continuar():
+    opcion_continuar=in_variable("\n¿Desea continuar? [S/N]", re.compile("[Ss]|[Nn]"),"\n¿Desea continuar? [S/N]")
+    if opcion_continuar.lower() == "n":
+        volver_menu()
 
 # CONEXION A LA BASE DE DATOS
 config = {
@@ -147,7 +152,7 @@ try:
 
         if opcion_letra.lower() == "a":
             drug_id = in_variable("\nIntroduzca el ID del farmaco: ", re.compile("CHEMBL[1-9]+"), "Drug ID: CHEMBL + número")
-            SQL.comprobar(cursor, drug_id, "drug_id", "drug")
+            count=SQL.comprobar(cursor, drug_id, "drug_id", "drug")
             query = str("SELECT drug_name, molecular_type, chemical_structure, inchi_key FROM drug WHERE drug_id= %s")
             SQL.consultar_unico(cursor, query, ("Drug Name", "Molecular type", "Chemical structure","InChi-Key"), params=(drug_id,))
 
@@ -256,13 +261,14 @@ try:
 
     elif int(opcion) == 6:
         menus.menu_6()
+        continuar()
 
         query = str("SELECT dr_di.inferred_score, dr.drug_id, dr.drug_name, di.disease_id, di.disease_name "
                     "FROM drug_disease dr_di, drug dr, disease di "
                     "WHERE dr_di.drug_id = dr.drug_id "
                     "AND dr_di.disease_id = di.disease_id "
                     "AND dr_di.inferred_score IS NOT null "
-                    "ORDER BY inferred_score ASC "
+                    "ORDER BY inferred_score, dr.drug_name, di.disease_name ASC "
                     "LIMIT 10")
 
         cursor.execute(query)
