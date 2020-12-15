@@ -1,4 +1,3 @@
-import numpy as np
 from os import system, getcwd
 import re
 import mysql.connector
