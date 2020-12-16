@@ -131,7 +131,7 @@ while True:
     elif int(opcion) == 2:
         menus.menu_2()
 
-        opcion_letra = in_variable("\nIntroduzca una opción: ", re.compile("[Aa]|[Bb]|[Cc]|esc"), "Introduzca a o b.")
+        opcion_letra = in_variable("\nIntroduzca una opción: ", re.compile("[Aa]|[Bb]|[Cc]|esc"), "Introduzca a, b o c.")
 
         if opcion_letra.lower() == "a":
             drug_id = in_variable("\nIntroduzca el ID del farmaco: ", re.compile("CHEMBL[1-9]+"), "Drug ID: CHEMBL + número")
