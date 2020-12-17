@@ -41,7 +41,13 @@ def eliminar(cursor, query, params):
     """
     Función para eliminar 
     """
-    cursor.execute(query,params)
+    try:
+        cursor.execute(query,params)
+        db.commit()
+    except mysql.connector as err:
+        if err.errno == errorcode.ER_CANT_DROP_FIELD_OR_KEY: 
+            print("\nERROR: No se encuentra en la base de datos.")
+            exit()
 
 def fuente_identificador(type_id):
     """
