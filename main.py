@@ -123,15 +123,15 @@ while True:
 
                 SQL.consultar_filas(cursor, query, ("\nTarget ID\tTarget name pref\tTarget type\tTarget organism"), title="\nPrimeras 10 instancias de dianas:")
         else:
-            continue   
+            continue
 
         nueva_consulta()
-        
+
     # Opcion 2: Informacion de los farmacos
     elif int(opcion) == 2:
-        menus.menu_2() 
+        menus.menu_2()
 
-        opcion_letra = in_variable("\nIntroduzca una opción: ", re.compile("[Aa]|[Bb]|[Cc]|esc"), "Introduzca a o b.")
+        opcion_letra = in_variable("\nIntroduzca una opción: ", re.compile("[Aa]|[Bb]|[Cc]|esc"), "Introduzca a, b o c.")
 
         if opcion_letra.lower() == "a":
             drug_id = in_variable("\nIntroduzca el ID del farmaco: ", re.compile("CHEMBL[1-9]+"), "Drug ID: CHEMBL + número")
@@ -151,9 +151,9 @@ while True:
             query = "SELECT ATC_code_id FROM ATC_code WHERE drug_id = %s GROUP BY drug_id"
             ###################
             SQL.consultar_filas(cursor, query, ("\nCódigos ATC asociados al fármaco " + drug_id + ":"), existe = comprobar_existe, params=(drug_id,))
-            
+
             #print("\nNo existen ningun codigo ATC asociado al farmaco.")
-        
+
         else:
             continue
 
@@ -185,7 +185,7 @@ while True:
                         "LIMIT 1")
 
             SQL.consultar_unico(cursor, query, ("Enfermedad: ", "Farmaco: "))
-        
+
         else:
             continue
 
@@ -218,7 +218,7 @@ while True:
                         "ORDER BY dr_ph.score DESC")
 
             SQL.consultar_filas(cursor, query, "\nPhenotype ID\tPhenotype name", existe = comprobar_existe, params=(drug_id,))
-        
+
         else:
             continue
 
@@ -249,7 +249,7 @@ while True:
                         "LIMIT 1")
 
             SQL.consultar_unico(cursor, query, ("Organismo con mayor número de dianas", "Número de dianas"))
-        
+
         else:
             continue
 
@@ -341,4 +341,3 @@ while True:
     #Opcion 9: Salir
     elif int(opcion) == 9:
         menus.final(db)
-
