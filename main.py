@@ -41,7 +41,7 @@ try:
     db.autocommit=True
     cursor=db.cursor()
 
-## Manejo de errores
+## Manejo de errores de conexion a la base de datos
 except mysql.connector.Error as err:
     if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
         print("\nERROR: Hay un error en su nombre de usuario o contraseña.")
@@ -135,24 +135,18 @@ while True:
 
         if opcion_letra.lower() == "a":
             drug_id = in_variable("\nIntroduzca el ID del farmaco: ", re.compile("CHEMBL[1-9]+"), "Drug ID: CHEMBL + número")
-            comprobar_existe = SQL.comprobar(cursor, drug_id, "drug_id", "drug")
             query = str("SELECT drug_name, molecular_type, chemical_structure, inchi_key FROM drug WHERE drug_id= %s")
-            SQL.consultar_unico(cursor, query, ("Drug Name", "Molecular type", "Chemical structure","InChi-Key"), existe = comprobar_existe, params=(drug_id,))
+            SQL.consultar_unico(cursor, query, ("Drug Name", "Molecular type", "Chemical structure","InChi-Key"), params=(drug_id,))
 
         elif opcion_letra.lower() == "b":
             drug_name = in_variable("\nIntroduzca el nombre de un farmaco: ", re.compile(".+"), "")
-            comprobar_existe = SQL.comprobar(cursor, drug_name, "drug_name", "drug")
             query = "SELECT synonymous_name FROM synonymous s, drug d WHERE s.drug_id=d.drug_id AND d.drug_name = %s"
-            SQL.consultar_filas(cursor, query, ("\nSinónimos de " + drug_name + ":"), existe = comprobar_existe, params=(drug_name,))
+            SQL.consultar_filas(cursor, query, ("\nSinónimos de " + drug_name + ":"), params=(drug_name,))
 
         elif opcion_letra.lower() == "c":
             drug_id = in_variable("\nIntroduzca el ID del farmaco: ", re.compile("CHEMBL[1-9]+"), "Drug ID: CHEMBL + número")
-            comprobar_existe = SQL.comprobar(cursor, drug_id, "drug_id", "drug")
             query = "SELECT ATC_code_id FROM ATC_code WHERE drug_id = %s GROUP BY drug_id"
-            ###################
-            SQL.consultar_filas(cursor, query, ("\nCódigos ATC asociados al fármaco " + drug_id + ":"), existe = comprobar_existe, params=(drug_id,))
-
-            #print("\nNo existen ningun codigo ATC asociado al farmaco.")
+            SQL.consultar_filas(cursor, query, ("\nCódigos ATC asociados al fármaco " + drug_id + ":"), params=(drug_id,))
 
         else:
             continue
@@ -167,14 +161,13 @@ while True:
 
         if opcion_letra.lower() == "a":
             disease_name = input('\nIntroduce el nombre de la enfermedad: ')
-            comprobar_existe = SQL.comprobar(cursor, disease_name, "disease_name", "disease")
             query = str("SELECT dr.drug_id, dr.drug_name "
                         "FROM drug dr, drug_disease dr_di, disease di "
                         "WHERE di.disease_name=%s "
                         "AND dr.drug_id=dr_di.drug_id "
                         "AND di.disease_id=dr_di.disease_id")
 
-            SQL.consultar_filas(cursor, query, "\nDrug ID\tDrug name", existe = comprobar_existe, params=(disease_name,))
+            SQL.consultar_filas(cursor, query, "\nDrug ID\tDrug name", params=(disease_name,))
 
         elif opcion_letra.lower() == "b":
             query = str("SELECT di.disease_name, dr.drug_name "
@@ -197,8 +190,10 @@ while True:
 
         opcion_letra = in_variable("\nIntroduzca una opción: ", re.compile("[Aa]|[Bb]|esc"), "Introduzca a o b.")
 
+        if opcion_letra == "esc":
+            continue
+
         drug_id = in_variable("\nIntroduzca el ID del farmaco: ", re.compile("CHEMBL[1-9]+"), "Drug ID: CHEMBL + número")
-        comprobar_existe = SQL.comprobar(cursor, drug_id, "drug_id", "drug")
 
         if opcion_letra.lower() == "a":
             query = str("SELECT ph.phenotype_id, ph.phenotype_name "
@@ -207,7 +202,7 @@ while True:
                         "AND dr_ph.phenotype_id = ph.phenotype_id "
                         "AND dr_ph.phenotype_type LIKE 'INDICATION'")
 
-            SQL.consultar_filas(cursor, query, "\nPhenotype ID\tPhenotype effect" , existe=comprobar_existe, params=(drug_id,))
+            SQL.consultar_filas(cursor, query, "\nPhenotype ID\tPhenotype effect" , params=(drug_id,))
 
         elif opcion_letra.lower() == "b":
             query = str("SELECT ph.phenotype_id, ph.phenotype_name "
@@ -217,10 +212,7 @@ while True:
                         "AND dr_ph.phenotype_id = ph.phenotype_id "
                         "ORDER BY dr_ph.score DESC")
 
-            SQL.consultar_filas(cursor, query, "\nPhenotype ID\tPhenotype name", existe = comprobar_existe, params=(drug_id,))
-
-        else:
-            continue
+            SQL.consultar_filas(cursor, query, "\nPhenotype ID\tPhenotype name", params=(drug_id,))
 
         nueva_consulta()
 
@@ -232,14 +224,13 @@ while True:
 
         if opcion_letra.lower() == "a":
             target_type = in_variable("\nIntroduzca el tipo de diana: ", re.compile("[A-Z]|-+"),"" )
-            comprobar_existe = SQL.comprobar(cursor, target_type, "target_type", "target")
             query = str("SELECT target_name_pref "
                         "FROM target "
                         "WHERE target_type = %s "
                         "ORDER BY target_name_pref ASC "
                         "LIMIT 20")
 
-            SQL.consultar_filas(cursor, query, ("\nDianas de tipo " + target_type + ":"), existe = comprobar_existe, params=(target_type,))
+            SQL.consultar_filas(cursor, query, ("\nDianas de tipo " + target_type + ":"), params=(target_type,))
 
         elif opcion_letra.lower() == "b":
 
@@ -333,7 +324,7 @@ while True:
             continue
 
         valor_min= in_variable("\nIntroduzca el valor minimo de score de asociacion que desea:", re.compile("[0-9]+"), "Error. Introduzca un número.")
-        query="UPDATE drug_phenotype_effect SET score=0 WHERE score < %s AND phenotype_type LIKE 'SIDE EFFECT'"
+        query="UPDATE drug_phenotype_effect SET score=0 WHERE CAST(score AS DECIMAL (7, 4)) < %s AND phenotype_type LIKE 'SIDE EFFECT'"
         SQL.modificar(cursor, query, valor_min)
 
         nueva_consulta()

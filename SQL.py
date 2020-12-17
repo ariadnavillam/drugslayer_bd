@@ -9,37 +9,46 @@ def contar_instancias(cursor, columna, tabla, header):
     for row in cursor:
        print("\n\t" + str(header) + str(row[0]))
 
-def consultar_filas(cursor, query, header, existe=True, params=None, title=None):
+def consultar_filas(cursor, query, header, params=None, title=None):
     """
     Funcion para obtener las filas tras una consulta con o sin parametros
+    Se comprueba si el valor introducido es correcto según de resultado vacio o no
     """
-    if existe == True:
-        header.count("\t")
-        cursor.execute(query, params)
+    header.count("\t")
+    cursor.execute(query, params)
+    results = cursor.fetchall()
+    count = cursor.rowcount
+    if count == 0:
+        print("\nEl valor introducido no existe en la base de datos")
+    else:
         if title != None:
             print(title)
         print(header)
-        for row in cursor:
+        for row in results:
             fila = str()
             for item in row:
                 fila = fila + str(item) +"\t"
             print(fila)
 
-def consultar_unico(cursor, query, header, existe=True, params = None):
+def consultar_unico(cursor, query, header, params = None):
     """
     Funcion para obtener el valor maximo o minimo
+    Se comprueba si el valor introducido es correcto según de resultado vacio o no
     """
-    if existe == True:
-        header.count("\t")
-        cursor.execute(query, params)
-        print("")
-        for row in cursor:
-            for i in range(len(header)):
-                print(header[i] + " : " + str(row[i]))
+    header.count("\t")
+    cursor.execute(query, params)
+    results = cursor.fetchall()
+    count = cursor.rowcount
+    if count == 0:
+        print("\nEl valor introducido no existe en la base de datos")
+    print("")
+    for row in results:
+        for i in range(len(header)):
+            print(header[i] + " : " + str(row[i]))
 
 def eliminar(cursor, query, params):
     """
-    Función para eliminar 
+    Función para eliminar
     """
     cursor.execute(query,params)
 
@@ -64,9 +73,11 @@ def insertar(db, cursor, query_add_dis, query_add_drug_dis, disease_id, type_id,
             cursor.execute(query_add_dis, (resource_id, disease_id, disease_name,))
             cursor.execute(query_add_drug_dis, (disease_id, drug_name,))
             db.commit()
+            print("\nSe ha insertado la enfermedad con identificador " + disease_id + " y nombre " + disease_name)
+            print("\nDicha enfermedad se ha asociado con el fármaco " + drug_name)
 
         except mysql.connector.Error as err:
-            if err.errno == errorcode.ER_DUP_ENTRY: 
+            if err.errno == errorcode.ER_DUP_ENTRY:
                 print("\nERROR: El identificador introducido ya se encuentra en la base de datos")
                 exit()
             elif err.errno == errorcode.ER_SUBQUERY_NO_1_ROW:
@@ -77,13 +88,18 @@ def insertar(db, cursor, query_add_dis, query_add_drug_dis, disease_id, type_id,
                 exit()
             else:
                 print(err)
-                exit()    
+                exit()
 
 def modificar(cursor, query, valor_min):
     """
     Funcion para establecer a 0 el indice de asociacion por debajo de un valor introducido por teclado
     """
+    query_contar= "SELECT COUNT(drug_id) FROM drug_phenotype_effect WHERE CAST(score AS DECIMAL (7, 4)) < %s AND CAST(score AS DECIMAL (7, 4)) > 0 AND phenotype_type LIKE 'SIDE EFFECT'"
+    cursor.execute(query_contar, (valor_min,))
+    for row in cursor:
+        print("\nSe han modificado " + str(row[0]) + " filas.")
     cursor.execute(query, (valor_min,))
+
 
 def comprobar(cursor, variable, columna, tabla):
     """
@@ -91,13 +107,11 @@ def comprobar(cursor, variable, columna, tabla):
     """
     query = str("SELECT * FROM " + tabla + " WHERE " + columna + " LIKE " + "'" + variable + "'")
     cursor.execute(query)
-    count = 0
-    for row in cursor:
-        count = count + 1
+    results = cursor.fetchall()
+    count = cursor.rowcount
     if count == 0:
         print("\nEl valor introducido: " + variable + ", para la columna " + columna + " de la tabla " + tabla + " no existe en la base de datos.")
         var = False
     else:
         var = True
-    
     return var
