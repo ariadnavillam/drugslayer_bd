@@ -81,7 +81,7 @@ while True:
         elif opcion_letra.lower() == "b":
             menus.menu_1_2()
 
-            opcion_letra2 = in_variable("\nIntroduzca una opción: ", re.compile("[Aa]|[Bb]|[Cc]|[Dd]"), "Introduzca a, b, c o d.")
+            opcion_letra2 = in_variable("\nIntroduzca una opción: ", re.compile("[Aa]|[Bb]|[Cc]|[Dd]|esc"), "Introduzca a, b, c o d.")
 
             if opcion_letra2.lower() == "a":
                 query = str("SELECT drug_id, drug_name, molecular_type, chemical_structure, inchi_key "
@@ -122,6 +122,10 @@ while True:
                             "LIMIT 10")
 
                 SQL.consultar_filas(cursor, query, ("\nTarget ID\tTarget name pref\tTarget type\tTarget organism"), title="\nPrimeras 10 instancias de dianas:")
+
+            else:
+                continue
+
         else:
             continue
 
