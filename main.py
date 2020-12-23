@@ -149,8 +149,8 @@ while True:
 
         elif opcion_letra.lower() == "c":
             drug_id = in_variable("\nIntroduzca el ID del farmaco: ", re.compile("CHEMBL[1-9]+"), "Drug ID: CHEMBL + número")
-            query = "SELECT ATC_code_id FROM ATC_code WHERE drug_id = %s GROUP BY drug_id"
-            SQL.consultar_filas(cursor, query, ("\nCódigos ATC asociados al fármaco " + drug_id + ":"), params=(drug_id,))
+            query = "SELECT ATC_code_id FROM ATC_code a JOIN drug d ON a.drug_id = d.drug_id WHERE d.drug_id = %s GROUP BY d.drug_id"
+            SQL.consultar_filas(cursor, query, ("\nCódigos ATC asociados al fármaco " + drug_id + ":"), params=(drug_id,), excp="Si")
 
         else:
             continue

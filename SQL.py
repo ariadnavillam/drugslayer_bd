@@ -9,7 +9,7 @@ def contar_instancias(cursor, columna, tabla, header):
     for row in cursor:
        print("\n\t" + str(header) + str(row[0]))
 
-def consultar_filas(cursor, query, header, params=None, title=None):
+def consultar_filas(cursor, query, header, params=None, title=None, excp=None):
     """
     Funcion para obtener las filas tras una consulta con o sin parametros
     Se comprueba si el valor introducido es correcto según de resultado vacio o no
@@ -19,7 +19,10 @@ def consultar_filas(cursor, query, header, params=None, title=None):
     results = cursor.fetchall()
     count = len(results)
     if count == 0:
-        print("\nEl valor introducido no existe en la base de datos")
+        if excp != None:
+            print("\nEl farmaco introducido no tiene ningun codigo ATC asociado")
+        else:
+            print("\nEl valor introducido no existe en la base de datos")
     else:
         if title != None:
             print(title)
@@ -64,7 +67,7 @@ def eliminar(cursor, query, params, db, n_rel):
             print("\nSe he eliminado la relacion " + n_rel)
 
         except mysql.connector.Error as err:
-            if err.errno == errorcode.ER_CANT_DROP_FIELD_OR_KEY: 
+            if err.errno == errorcode.ER_CANT_DROP_FIELD_OR_KEY:
                 print("\nERROR: No se encuentra en la base de datos.")
                 exit()
             else:
@@ -134,4 +137,3 @@ def comprobar(cursor, variable, columna, tabla):
     else:
         var = True
     return var
-
