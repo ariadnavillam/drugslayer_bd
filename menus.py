@@ -91,7 +91,8 @@ def menu_6():
     header("Borrados")
     print("En esta ventana podras borrar asociacion entre un farmaco y una enfermedad \n"
           "con un score muy bajo. En pantalla se muestran las 10 relaciones con un score\n"
-          "mas bajo. Escriba el nombre del farmaco y el nombre de la enfermedad separadas por un guion (-).")
+          "mas bajo. Si introduce una relación que no se encuentra entre las mostradas en\n"
+          "pantalla también se borrara, siempre que exista.")
 
 def menu_7():
     system("cls")

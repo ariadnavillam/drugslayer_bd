@@ -17,7 +17,7 @@ def consultar_filas(cursor, query, header, params=None, title=None):
     header.count("\t")
     cursor.execute(query, params)
     results = cursor.fetchall()
-    count = cursor.rowcount
+    count = len(results)
     if count == 0:
         print("\nEl valor introducido no existe en la base de datos")
     else:
@@ -32,13 +32,13 @@ def consultar_filas(cursor, query, header, params=None, title=None):
 
 def consultar_unico(cursor, query, header, params = None):
     """
-    Funcion para obtener el valor maximo o minimo
+    Funcion para obteneres valores concretos
     Se comprueba si el valor introducido es correcto según de resultado vacio o no
     """
     header.count("\t")
     cursor.execute(query, params)
     results = cursor.fetchall()
-    count = cursor.rowcount
+    count = len(results)
     if count == 0:
         print("\nEl valor introducido no existe en la base de datos")
     print("")
@@ -46,17 +46,30 @@ def consultar_unico(cursor, query, header, params = None):
         for i in range(len(header)):
             print(header[i] + " : " + str(row[i]))
 
-def eliminar(cursor, query, params):
+def eliminar(cursor, query, params, db, n_rel):
     """
-    Función para eliminar
+    Función para eliminar una entrada
     """
-    try:
-        cursor.execute(query,params)
-        db.commit()
-    except mysql.connector as err:
-        if err.errno == errorcode.ER_CANT_DROP_FIELD_OR_KEY: 
-            print("\nERROR: No se encuentra en la base de datos.")
-            exit()
+    #primero comprobamos que existe en la base de datos lo que ha introducido el usuario
+
+    query_c = "SELECT * FROM drug_disease WHERE drug_id LIKE %s AND disease_id LIKE %s"
+    cursor.execute(query_c, params)
+    results = cursor.fetchall()
+    if len(results) == 0:
+        print("\nLa relacion no existe. ")
+    else:
+        try:
+            cursor.execute(query,params)
+            db.commit()
+            print("\nSe he eliminado la relacion " + n_rel)
+
+        except mysql.connector.Error as err:
+            if err.errno == errorcode.ER_CANT_DROP_FIELD_OR_KEY: 
+                print("\nERROR: No se encuentra en la base de datos.")
+                exit()
+            else:
+                print(err)
+                exit()
 
 def fuente_identificador(type_id):
     """
@@ -114,10 +127,11 @@ def comprobar(cursor, variable, columna, tabla):
     query = str("SELECT * FROM " + tabla + " WHERE " + columna + " LIKE " + "'" + variable + "'")
     cursor.execute(query)
     results = cursor.fetchall()
-    count = cursor.rowcount
+    count = len(results)
     if count == 0:
         print("\nEl valor introducido: " + variable + ", para la columna " + columna + " de la tabla " + tabla + " no existe en la base de datos.")
         var = False
     else:
         var = True
     return var
+

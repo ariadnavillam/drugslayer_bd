@@ -269,34 +269,35 @@ while True:
 
         cursor.execute(query)
 
-        drug_name_id = dict()
-        disease_name_id = dict()
+        drug_name_id = dict() #en este diccionario se almacenan los drug name con sus respectivos id
+        disease_name_id = dict() #en este diccionario se almacenan los disease name con sus respectivos id
         print("\nScore\tDrug name\tDisease name")
         for row in cursor:
             drug_name_id[row[2]] = row[1]
             disease_name_id[row[4]] = row[3]
-            print(row[0], row[2], row[4])
+            print(row[0], row[2], row[4]) #se imprime el score, drug name y disease name
 
         while True:
-            var_in = input("Introduzca nombre de la relacion a eliminar : ")
+            var_in = input("Introduzca nombre de la relacion a eliminar (copia el fármaco y la enfermedad con un guion '-' entre medias): ")
             if var_in == "exit":
                 exit()
+
             var_in = var_in.strip()
             dd = var_in.split("-")
-            print(dd)
-            if dd[0] in drug_name_id and dd[1] in disease_name_id:
+
+            if dd[0] in drug_name_id and dd[1] in disease_name_id: #comprobamos que se encuentran dentro de los datos que se han mostrado
                 drug_id = drug_name_id[dd[0]]
                 disease_id = disease_name_id[dd[1]]
                 break
             else:
                 print("Relacion no valida")
 
-        # query = str("SELECT * FROM drug_disease "
-        #             "WHERE drug_id=%s AND disease_id=%s")
         query = str("DELETE FROM drug_disease "
                 "WHERE drug_id=%s AND disease_id=%s")
 
-        SQL.eliminar(cursor, query, (drug_id, disease_id,))
+        SQL.eliminar(cursor, query, (drug_id, disease_id,), db, var_in)
+
+        nueva_consulta()
 
     #Opcion 7: Inserciones
     elif int(opcion) == 7:
