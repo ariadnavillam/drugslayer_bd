@@ -2,17 +2,20 @@ import mysql.connector
 from mysql.connector import errorcode
 def contar_instancias(cursor, columna, tabla, header):
     """
-    Función para contar todas las instancias de una tabla
+    Función para contar todas las instancias de una tabla.
     """
     query = str("SELECT COUNT(" + columna + ") FROM " + tabla)
     cursor.execute(query)
     for row in cursor:
-       print("\n\t" + str(header) + str(row[0]))
+       print("\n\t" + str('\033[1m' + header + '\033[0m') + str(row[0]))
 
 def consultar_filas(cursor, query, header, params=None, title=None, excp=None):
     """
-    Funcion para obtener las filas tras una consulta con o sin parametros
-    Se comprueba si el valor introducido es correcto según de resultado vacio o no
+    Funcion para obtener las filas tras una consulta con o sin parametros. 
+    Tenemos que introducir la query y el header que queremos que se imprima.
+    Los parámetros y el título son parametros son opcionales ya que solo se necesitan en algunas consultas.
+    El parámetro excp sirve para la consulta 2.c en la que se necesita sacar si existe codigo ATC.
+    Se comprueba si el valor introducido es correcto según de resultado vacio o no.
     """
     header.count("\t")
     cursor.execute(query, params)
@@ -20,13 +23,21 @@ def consultar_filas(cursor, query, header, params=None, title=None, excp=None):
     count = len(results)
     if count == 0:
         if excp != None:
-            print("\nEl farmaco introducido no tiene ningun codigo ATC asociado")
+            query = str("SELECT * FROM drug WHERE drug_id = %s")
+            cursor.execute(query, params)
+            results = cursor.fetchall()
+            if len(results) != 0:
+                print("\nEl farmaco introducido no tiene ningun codigo ATC asociado")
+            else:
+                print("\nEl farmaco introducido no se encuentra en la base de datos ")
+
         else:
             print("\nEl valor introducido no existe en la base de datos")
+
     else:
         if title != None:
-            print(title)
-        print(header)
+            print('\033[1m' + title + '\033[0m')
+        print('\033[1m' + header + '\033[0m')
         for row in results:
             fila = str()
             for item in row:
@@ -35,7 +46,8 @@ def consultar_filas(cursor, query, header, params=None, title=None, excp=None):
 
 def consultar_unico(cursor, query, header, params = None):
     """
-    Funcion para obteneres valores concretos
+    Funcion para obteneres valores concretos.
+    Debemos introducir la query y el header y los parametros son opcionales.
     Se comprueba si el valor introducido es correcto según de resultado vacio o no
     """
     header.count("\t")
@@ -47,14 +59,16 @@ def consultar_unico(cursor, query, header, params = None):
     print("")
     for row in results:
         for i in range(len(header)):
-            print(header[i] + " : " + str(row[i]))
+            print('\033[1m' + header[i] + " : " + '\033[0m' + str(row[i]))
 
 def eliminar(cursor, query, params, db, n_rel):
     """
-    Función para eliminar una entrada
+    Función para eliminar una entrada.
+    Se debe introducir la query, los parametros, la base de datos y una descripcion de lo que se elimina.
+    Primero comprobamos que existe en la base de datos lo que ha introducido el usuario.
+    Si existe se elimina, a no ser que se produzca algun error y se imprime el código del error.
     """
-    #primero comprobamos que existe en la base de datos lo que ha introducido el usuario
-
+    #esta query solo la usamos para mirar si existe
     query_c = "SELECT * FROM drug_disease WHERE drug_id LIKE %s AND disease_id LIKE %s"
     cursor.execute(query_c, params)
     results = cursor.fetchall()
@@ -67,10 +81,6 @@ def eliminar(cursor, query, params, db, n_rel):
             print("\nSe he eliminado la relacion " + n_rel)
 
         except mysql.connector.Error as err:
-            if err.errno == errorcode.ER_CANT_DROP_FIELD_OR_KEY:
-                print("\nERROR: No se encuentra en la base de datos.")
-                exit()
-            else:
                 print(err)
                 exit()
 
@@ -87,6 +97,8 @@ def fuente_identificador(type_id):
 def insertar(db, cursor, query_add_dis, query_add_drug_dis, disease_id, type_id, disease_name, drug_name, existe):
     """
     Funcion para insertar una el id y nombre de una enfermedad, ademas de un farmaco asociado
+    Los parametros que tenemos que introducir son las dos querys, los id y los nombres que queremos y 
+    el parametro existe que tendra el resultado de la funcion comprobar
     """
     if existe == True:
         try:

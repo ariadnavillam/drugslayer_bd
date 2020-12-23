@@ -70,12 +70,8 @@ def menu_4():
     header("Informacion de los efectos fenotipicos")
     print("En esta ventana podra consultar información de los efectos fenotípicos \n"
           "asociados un farmaco. Opciones:\n")
-    print("\ta. Indicaciones del farmaco: muestra los efectos fenotipicos \n"
-          "\tque sean indicaciones para las cuales se utiliza el farmaco.\n")
-    print(" \tb. Efectos secundarios de un fármaco: muestra aquellos efectos \n"
-          "\tfenotipicos categorizados como efectos secundarios generados\n"
-          "\tpor el farmaco ordenados de forma descendiente en base a la \n"
-          "\tevidencia de esta asociacion.")
+    print("\ta. Indicaciones del farmaco.")
+    print(" \n\tb. Efectos secundarios de un fármaco.")
     print("\nIntroduzca 'esc' para volver al menu principal.")
 
 def menu_5():

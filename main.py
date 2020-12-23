@@ -7,7 +7,9 @@ import menus
 
 def in_variable(texto, patron, texto_alt):
     """
-    Esta función sirve para introducir variables evitando errores
+    Esta función sirve para introducir variables evitando errores, de tal manera que solo se pueden 
+    introducir valores que cumplan con la expresion regular que se introduce en patron.
+    El texto alternativo (text_alt) nos da informacion sobre como se debe introducir dicha variable
     """
     while True:
         var = input(texto)
@@ -60,10 +62,17 @@ except mysql.connector.Error as err:
         exit()
 
 # CUERPO DEL SCRIPT
+# El script se basa en un bucle. Cuando se termina una consulta se pregunta al usuario 
+# si quiere hacer una nueva consulta con la funcion nueva_consulta. 
+# El usuario puede volver al menu principal si escribe esc
+# Para cada apartado se procede a tomar los parametros del usuario y entonces se pasan 
+# a la correspondiente funcion junto con la query, aunque hay excepciones para hacer cosas más específicas.
+
 while True:
+
     menus.principal() #texto con el menú principal
 
-    opcion = in_variable("\n¿Que función desea hacer? [Introduzca el número de la función deseada]", re.compile("[1-9]"), "Error. Introduzca un número.")
+    opcion = in_variable("\n¿Que función desea hacer? [Introduzca el número de la función deseada]", re.compile("[1-9]$"), "\nError: Introduzca un número del 1 al 9.")
     # Opcion 1: Informacion general
     if int(opcion) == 1:
         menus.menu_1()
@@ -171,7 +180,7 @@ while True:
                         "AND dr.drug_id=dr_di.drug_id "
                         "AND di.disease_id=dr_di.disease_id")
 
-            SQL.consultar_filas(cursor, query, "\nDrug ID\tDrug name", params=(disease_name,))
+            SQL.consultar_filas(cursor, query, "\nDrug ID\t\tDrug name", params=(disease_name,))
 
         elif opcion_letra.lower() == "b":
             query = str("SELECT di.disease_name, dr.drug_name "
@@ -256,8 +265,9 @@ while True:
 
         #opcion para elegir si se quiere continuar o volver al menú principal
         opcion_continuar = in_variable("\n¿Desea continuar? [S/N] ", re.compile("[Ss|Nn]"), "Introduzca S o N.")
+        
         if opcion_continuar.lower() == "n":
-            continue
+            continue #si la respuesta es n o N vuelve comenzar el bucle
 
         query = str("SELECT dr_di.inferred_score, dr.drug_id, dr.drug_name, di.disease_id, di.disease_name "
                     "FROM drug_disease dr_di, drug dr, disease di "
@@ -290,7 +300,7 @@ while True:
                 disease_id = disease_name_id[dd[1]]
                 break
             else:
-                print("Relacion no valida")
+                print("\nRelacion no valida.")
 
         query = str("DELETE FROM drug_disease "
                 "WHERE drug_id=%s AND disease_id=%s")
@@ -303,13 +313,14 @@ while True:
     elif int(opcion) == 7:
         menus.menu_7()
         opcion_continuar = in_variable("\n¿Desea continuar? [S/N] ", re.compile("[Ss|Nn]"), "Introduzca S o N.")
+        
         if opcion_continuar.lower() == "n":
             continue
 
-        disease_id= in_variable("\nIntroduzca el identificador de la enfermedad:", re.compile("[1-9]+"), "Error. Introduzca un número.")
+        disease_id = in_variable("\nIntroduzca el identificador de la enfermedad:", re.compile("[1-9]+"), "Error. Introduzca un número.")
 
         menus.menu_7_1()
-
+        #se establecen los parametros para la funcion SQL.insertar()
         type_id = in_variable("\n¿Cuál es la fuente del identificador introducido?", re.compile("[Aa]|[Bb]"), "Introduzca a o b")
         disease_name = in_variable("\nIntroduzca el nombre de la enfermedad: ", re.compile(".+"), "")
         drug_name = in_variable("\nIntroduzca el nombre del farmaco asociado: ", re.compile(".+"), "")
